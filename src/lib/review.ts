@@ -24,7 +24,7 @@ export function isReviewDue(
   return nowMinutes >= dueMinutes;
 }
 
-const PROMPTED_KEY = 'hearth-review-prompted';
+const PROMPTED_KEY = 'cozy-pomodoro-review-prompted';
 
 export function getPromptedDay(): string | null {
   try {

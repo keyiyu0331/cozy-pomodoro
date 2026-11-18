@@ -1,6 +1,6 @@
 // The service worker: a script the browser keeps running for this site, which
-// can answer the page's network requests itself. It is what makes Hearth
-// work offline.
+// can answer the page's network requests itself. It is what makes Cozy
+// Pomodoro work offline.
 //
 // `npm run build` copies this file to dist/sw.js and puts two lines above it:
 //   VERSION — a fingerprint of the build (changes whenever any file changes)
@@ -10,7 +10,9 @@
 // is answered from the cache, so no network is needed. A new build has a new
 // VERSION, which makes the browser install the new worker and drop the old cache.
 
-const CACHE = `hearth-${VERSION}`;
+const CACHE = `cozy-pomodoro-${VERSION}`;
+// Caches made by older builds, including ones from when the app was called "hearth".
+const OLD_PREFIXES = ['cozy-pomodoro-', 'hearth-'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -27,7 +29,9 @@ self.addEventListener('activate', (event) => {
       .keys()
       .then((names) =>
         Promise.all(
-          names.filter((name) => name.startsWith('hearth-') && name !== CACHE).map((name) => caches.delete(name)),
+          names
+            .filter((name) => name !== CACHE && OLD_PREFIXES.some((prefix) => name.startsWith(prefix)))
+            .map((name) => caches.delete(name)),
         ),
       )
       .then(() => self.clients.claim()),

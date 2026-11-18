@@ -18,7 +18,7 @@ function listFiles(dir: string): string[] {
  */
 function offlineServiceWorker(): Plugin {
   return {
-    name: 'hearth-service-worker',
+    name: 'cozy-pomodoro-service-worker',
     apply: 'build',
     closeBundle() {
       const dist = 'dist';

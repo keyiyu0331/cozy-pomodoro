@@ -152,16 +152,24 @@ describe('export / import', () => {
     expect(parsed.settings).toMatchObject({ focusMin: 50, shortBreakMin: 5, chime: 'rise' });
   });
 
-  it('rejects files that are not Hearth exports', () => {
+  it('rejects files that are not Cozy Pomodoro exports', () => {
     expect(() => parseImport('not json', defaults)).toThrow('not valid JSON');
-    expect(() => parseImport('{"hello":1}', defaults)).toThrow('not a Hearth export');
-    expect(() => parseImport('[1,2]', defaults)).toThrow('not a Hearth export');
-    expect(() => parseImport('{"app":"hearth","schemaVersion":99}', defaults)).toThrow('newer version');
+    expect(() => parseImport('{"hello":1}', defaults)).toThrow('not a Cozy Pomodoro export');
+    expect(() => parseImport('[1,2]', defaults)).toThrow('not a Cozy Pomodoro export');
+    expect(() => parseImport('{"app":"cozy-pomodoro","schemaVersion":99}', defaults)).toThrow('newer version');
+  });
+
+  it('still accepts exports made under the old name "hearth"', () => {
+    const old = JSON.stringify({ app: 'hearth', schemaVersion: 1, sessions: [session({ id: 'old' })] });
+    const parsed = parseImport(old, defaults);
+    expect(parsed.app).toBe('cozy-pomodoro');
+    expect(parsed.sessions.map((s) => s.id)).toEqual(['old']);
+    expect(() => parseImport('{"app":"other","schemaVersion":1}', defaults)).toThrow('not a Cozy Pomodoro export');
   });
 
   it('drops broken entries instead of failing', () => {
     const text = JSON.stringify({
-      app: 'hearth',
+      app: 'cozy-pomodoro',
       schemaVersion: 1,
       sessions: [session({ id: 'ok' }), { id: 5 }, null, 'x'],
       tags: 'oops',

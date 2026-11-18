@@ -15,7 +15,7 @@ function currentSettings(): Settings {
   return settings;
 }
 
-/** Download every piece of app data as hearth-backup-YYYY-MM-DD.json. */
+/** Download every piece of app data as cozy-pomodoro-backup-YYYY-MM-DD.json. */
 export function exportAll(): void {
   const history = useHistoryStore.getState();
   const file = buildExport(
@@ -31,7 +31,7 @@ export function exportAll(): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `hearth-backup-${dayKey(Date.now())}.json`;
+  link.download = `cozy-pomodoro-backup-${dayKey(Date.now())}.json`;
   link.click();
   URL.revokeObjectURL(url);
 }

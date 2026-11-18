@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "hearth-dev",
+      "name": "cozy-pomodoro-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
@@ -15,7 +15,7 @@
       "port": 5173
     },
     {
-      "name": "hearth-test",
+      "name": "cozy-pomodoro-test",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
@@ -28,7 +28,7 @@
       "port": 5199
     },
     {
-      "name": "hearth-preview",
+      "name": "cozy-pomodoro-preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",

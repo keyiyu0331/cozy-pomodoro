@@ -2,12 +2,13 @@
 // written to IndexedDB (the browser's larger database) after every change.
 // localStorage is fine for small settings but history can grow for years.
 
-import { get as idbGet, set as idbSet } from 'idb-keyval';
+import { del as idbDel, get as idbGet, set as idbSet } from 'idb-keyval';
 import { create } from 'zustand';
+import { OLD_HISTORY_KEY } from '../lib/oldNames';
 import { pruneHistory } from '../lib/retention';
 import type { DailyReview, SessionRecord } from '../types';
 
-const DB_KEY = 'hearth-history';
+const DB_KEY = 'cozy-pomodoro-history';
 const SCHEMA_VERSION = 1;
 
 interface StoredHistory {
@@ -46,7 +47,15 @@ export const useHistoryStore = create<HistoryStore>()((set, get) => ({
 
   load: async () => {
     try {
-      const stored = await idbGet<StoredHistory>(DB_KEY);
+      let stored = await idbGet<StoredHistory>(DB_KEY);
+      if (!stored) {
+        // Nothing under the new name: look for history saved under the old one.
+        stored = await idbGet<StoredHistory>(OLD_HISTORY_KEY);
+        if (stored) {
+          await idbSet(DB_KEY, stored);
+          await idbDel(OLD_HISTORY_KEY);
+        }
+      }
       if (!stored) return;
       // Keep anything recorded in the instant before loading finished.
       const savedIds = new Set(stored.sessions.map((s) => s.id));

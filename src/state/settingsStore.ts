@@ -38,7 +38,7 @@ export const useSettingsStore = create<SettingsStore>()(
       resetToDefaults: () => set(DEFAULT_SETTINGS),
     }),
     {
-      name: 'hearth-settings', // the localStorage key
+      name: 'cozy-pomodoro-settings', // the localStorage key
       version: 1, // schemaVersion: bump + add a `migrate` function when Settings changes shape
     },
   ),

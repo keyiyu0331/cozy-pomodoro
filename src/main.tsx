@@ -1,5 +1,6 @@
 // Entry point: finds <div id="root"> in index.html and mounts the React app in it.
 
+import './lib/oldNames'; // must stay first: moves data saved under the app's old name
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';

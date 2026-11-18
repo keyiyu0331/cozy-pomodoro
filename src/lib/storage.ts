@@ -6,8 +6,13 @@ import type { DailyReview, SessionRecord, Settings, Tag } from '../types';
 
 export const SCHEMA_VERSION = 1;
 
+/** Written into every export so we can recognise our own files. */
+const APP_ID = 'cozy-pomodoro';
+/** Exports made when the app was still called "hearth" can be imported too. */
+const OLD_APP_IDS = ['hearth'];
+
 export interface ExportFile {
-  app: 'hearth';
+  app: typeof APP_ID;
   schemaVersion: number;
   exportedAt: number; // epoch ms
   settings: Settings;
@@ -20,7 +25,7 @@ export function buildExport(
   data: Pick<ExportFile, 'settings' | 'tags' | 'sessions' | 'reviews'>,
   now: number,
 ): ExportFile {
-  return { app: 'hearth', schemaVersion: SCHEMA_VERSION, exportedAt: now, ...data };
+  return { app: APP_ID, schemaVersion: SCHEMA_VERSION, exportedAt: now, ...data };
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -60,7 +65,7 @@ function migrate(data: Record<string, unknown>): Record<string, unknown> {
 
 /**
  * Read the text of an export file. Throws an Error with a readable message
- * if it isn't a Hearth export. `defaults` fills in any missing settings.
+ * if it isn't a Cozy Pomodoro export. `defaults` fills in any missing settings.
  */
 export function parseImport(text: string, defaults: Settings): ExportFile {
   let raw: unknown;
@@ -69,17 +74,18 @@ export function parseImport(text: string, defaults: Settings): ExportFile {
   } catch {
     throw new Error('That file is not valid JSON.');
   }
-  if (!isObject(raw) || raw.app !== 'hearth' || typeof raw.schemaVersion !== 'number') {
-    throw new Error('That file is not a Hearth export.');
+  const ours = isObject(raw) && (raw.app === APP_ID || OLD_APP_IDS.includes(raw.app as string));
+  if (!isObject(raw) || !ours || typeof raw.schemaVersion !== 'number') {
+    throw new Error('That file is not a Cozy Pomodoro export.');
   }
   if (raw.schemaVersion > SCHEMA_VERSION) {
-    throw new Error('That file was made by a newer version of Hearth.');
+    throw new Error('That file was made by a newer version of Cozy Pomodoro.');
   }
   const data = migrate(raw);
 
   const list = (value: unknown): unknown[] => (Array.isArray(value) ? value : []);
   return {
-    app: 'hearth',
+    app: APP_ID,
     schemaVersion: SCHEMA_VERSION,
     exportedAt: typeof data.exportedAt === 'number' ? data.exportedAt : 0,
     settings: { ...defaults, ...(isObject(data.settings) ? (data.settings as Partial<Settings>) : {}) },

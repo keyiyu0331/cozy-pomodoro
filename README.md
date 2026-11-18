@@ -1,4 +1,4 @@
-# Hearth
+# Cozy Pomodoro
 
 A cozy pixel-art Pomodoro focus timer. Set an intention, focus, reflect,
 review your day — over a living scene with seasons, weather and ambient sound.

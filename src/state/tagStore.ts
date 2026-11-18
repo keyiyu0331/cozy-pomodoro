@@ -31,6 +31,6 @@ export const useTagStore = create<TagStore>()(
       removeTag: (id) => set((s) => ({ tags: s.tags.filter((t) => t.id !== id) })),
       replaceTags: (tags) => set({ tags }),
     }),
-    { name: 'hearth-tags', version: 1 },
+    { name: 'cozy-pomodoro-tags', version: 1 },
   ),
 );

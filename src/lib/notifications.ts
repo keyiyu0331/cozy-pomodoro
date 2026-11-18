@@ -16,7 +16,7 @@ export function showNotification(title: string, body: string): void {
   if (!supported() || Notification.permission !== 'granted') return;
   try {
     // `tag` makes a new notification replace the previous one instead of stacking.
-    new Notification(title, { body, tag: 'hearth-phase' });
+    new Notification(title, { body, tag: 'cozy-pomodoro-phase' });
   } catch {
     // Some mobile browsers only allow notifications from a service worker
     // (comes with the PWA work in Phase 6).
