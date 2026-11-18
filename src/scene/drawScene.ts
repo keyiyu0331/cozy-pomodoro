@@ -4,9 +4,11 @@
 
 import type { Ctx, Layer } from './draw';
 import { drawCottage, drawLights } from './layers/cottage';
+import { drawCritters } from './layers/critters';
 import { drawGround } from './layers/ground';
 import { drawHills } from './layers/hills';
 import { drawOverlay } from './layers/overlay';
+import { drawProps } from './layers/props';
 import { drawSky } from './layers/sky';
 import { drawTrees } from './layers/trees';
 import { getSceneTheme, type SceneState } from './themeConfig';
@@ -19,6 +21,8 @@ const LAYERS: Layer[] = [
   drawTrees,
   drawCottage,
   drawGround,
+  drawProps, // fence, flower boxes
+  drawCritters, // cat, chickens, birds
   drawWeather, // rain, snow, leaves, fog...
   drawOverlay,
   drawLights, // after the overlay, so lights aren't dimmed by the night tint

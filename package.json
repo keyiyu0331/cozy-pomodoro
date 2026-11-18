@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate-audio": "node scripts/generate-audio.mjs"
+    "generate-audio": "node scripts/generate-audio.mjs",
+    "generate-icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "howler": "^2.2.4",

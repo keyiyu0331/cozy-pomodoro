@@ -57,17 +57,19 @@ export interface WeatherLook {
   /** Grey wash for cloudy weather, or null for a clear sky (sun/moon/stars show). */
   overcast: string | null;
   lightning: boolean;
+  /** Are the cat, chickens and birds out in this weather? */
+  critters: boolean;
 }
 
 export const WEATHER_ORDER: Weather[] = ['clear', 'rain', 'storm', 'snow', 'windy', 'fog'];
 
 export const WEATHERS: Record<Weather, WeatherLook> = {
-  clear: { label: 'Clear', particles: [], intensity: 1, overcast: null, lightning: false },
-  rain: { label: 'Rain', particles: ['rain'], intensity: 1, overcast: 'rgba(70, 80, 100, 0.35)', lightning: false },
-  storm: { label: 'Storm', particles: ['rain'], intensity: 1.8, overcast: 'rgba(38, 42, 68, 0.55)', lightning: true },
-  snow: { label: 'Snow', particles: ['snow'], intensity: 1, overcast: 'rgba(200, 210, 225, 0.30)', lightning: false },
-  windy: { label: 'Windy', particles: ['leaves'], intensity: 1, overcast: null, lightning: false },
-  fog: { label: 'Fog', particles: ['fog'], intensity: 1, overcast: 'rgba(214, 218, 222, 0.28)', lightning: false },
+  clear: { label: 'Clear', particles: [], intensity: 1, overcast: null, lightning: false, critters: true },
+  rain: { label: 'Rain', particles: ['rain'], intensity: 1, overcast: 'rgba(70, 80, 100, 0.35)', lightning: false, critters: false },
+  storm: { label: 'Storm', particles: ['rain'], intensity: 1.8, overcast: 'rgba(38, 42, 68, 0.55)', lightning: true, critters: false },
+  snow: { label: 'Snow', particles: ['snow'], intensity: 1, overcast: 'rgba(200, 210, 225, 0.30)', lightning: false, critters: false },
+  windy: { label: 'Windy', particles: ['leaves'], intensity: 1, overcast: null, lightning: false, critters: true },
+  fog: { label: 'Fog', particles: ['fog'], intensity: 1, overcast: 'rgba(214, 218, 222, 0.28)', lightning: false, critters: true },
 };
 
 export const SEASON_ORDER: Season[] = ['spring', 'summer', 'autumn', 'winter'];

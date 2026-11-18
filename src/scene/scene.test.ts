@@ -4,6 +4,7 @@ import { mix, rand } from './draw';
 import { drawScene } from './drawScene';
 import { coverLayout } from './scale';
 import { SEASON_ORDER, SEASONS, TIME_ORDER, WEATHER_ORDER, WEATHERS } from './themeConfig';
+import * as sprites from './sprites';
 import { PARTICLES } from './weather';
 import { flashStrength, strikeTime, STRIKE_PERIOD } from './weather/lightning';
 
@@ -78,6 +79,27 @@ describe('lightning', () => {
     expect(flashStrength(at + 0.01)).toBeGreaterThan(0);
     expect(flashStrength(at - 0.05)).toBe(0);
     expect(flashStrength(at + 1)).toBe(0);
+  });
+});
+
+describe('sprites', () => {
+  it('every sprite is a rectangle (all rows the same length)', () => {
+    const all = [
+      ...sprites.CAT_WALK,
+      sprites.CAT_SIT,
+      sprites.CHICKEN_STAND,
+      sprites.CHICKEN_PECK,
+      ...sprites.BIRD_FLAP,
+    ];
+    for (const sprite of all) {
+      expect(new Set(sprite.map((row) => row.length)).size).toBe(1);
+    }
+  });
+
+  it('drawSprite paints one pixel per letter and skips dots', () => {
+    const { ctx, rects } = fakeContext();
+    sprites.drawSprite(ctx, ['a.a', '.a.'], 0, 0, { a: '#000000' });
+    expect(rects()).toBe(3);
   });
 });
 
