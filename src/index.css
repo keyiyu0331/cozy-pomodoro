@@ -1,0 +1,55 @@
+/* Global styles + the colour palette as CSS variables.
+   Phase 3 will swap these variables per season; for now they change per
+   timer phase so you can tell focus from break at a glance. */
+
+:root {
+  --bg: #f1e2c0;
+  --wood: #c08a52;
+  --wood-dark: #6f4424;
+  --wood-light: #dcae78;
+  --paper: #fbf4de;
+  --ink: #3a2a1b;
+  --ink-soft: #7b6650;
+  --accent: #d2603a;
+  --accent-ink: #fff8ea;
+  --font: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+[data-phase='shortBreak'] {
+  --bg: #cfe3bd;
+  --accent: #4d8a4a;
+}
+
+[data-phase='longBreak'] {
+  --bg: #c3d9e8;
+  --accent: #3d76a6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
