@@ -24,6 +24,8 @@ export interface Settings {
   surpriseWeather: boolean;
   reducedMotion: boolean;
   reviewTime?: string; // "21:00"
+  /** Delete sessions older than this many days (today = day 1). 0 = keep forever. */
+  keepHistoryDays: number;
 }
 
 /** The scene a session was done in (time of day already resolved from 'auto'). */

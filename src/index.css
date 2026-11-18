@@ -1,6 +1,7 @@
 /* Global styles + the colour palette as CSS variables.
-   Phase 3 will swap these variables per season; for now they change per
-   timer phase so you can tell focus from break at a glance. */
+   The values below are only the starting point: App.tsx overwrites them with
+   the current season's palette from scene/themeConfig.ts. During breaks the
+   accent colour changes so you can tell focus from break at a glance. */
 
 :root {
   --bg: #f1e2c0;
@@ -16,13 +17,28 @@
 }
 
 [data-phase='shortBreak'] {
-  --bg: #cfe3bd;
   --accent: #4d8a4a;
 }
 
 [data-phase='longBreak'] {
-  --bg: #c3d9e8;
-  --accent: #3d76a6;
+  --accent: #2f6f8f;
+}
+
+/* When the season changes, colours glide to the new palette instead of jumping. */
+main *,
+dialog,
+dialog * {
+  transition:
+    background-color 1s,
+    border-color 1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main *,
+  dialog,
+  dialog * {
+    transition: none;
+  }
 }
 
 * {

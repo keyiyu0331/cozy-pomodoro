@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ActiveSession, SessionRecord, Settings } from '../types';
+import { pruneHistory } from './retention';
 import { buildSessionRecord } from './sessionRecord';
 import { dayKey, formatMinutes, recentIntentions, sessionsOnDay, totalMinutes } from './stats';
 import { buildExport, parseImport } from './storage';
@@ -155,5 +156,32 @@ describe('export / import', () => {
     expect(parsed.sessions.map((s) => s.id)).toEqual(['ok']);
     expect(parsed.tags).toEqual([]);
     expect(parsed.reviews).toEqual([]);
+  });
+});
+
+describe('pruneHistory', () => {
+  const sessions = [
+    session({ id: 'today', startedAt: at(10, 9) }),
+    session({ id: 'yesterday', startedAt: at(9, 23) }),
+    session({ id: 'week', startedAt: at(4, 0) }),
+    session({ id: 'old', startedAt: at(3, 23) }),
+  ];
+  const reviews = [{ date: '2026-03-10' }, { date: '2026-03-09' }, { date: '2026-03-01' }];
+  const now = at(10, 15);
+  const ids = (days: number) => pruneHistory(sessions, reviews, days, now).sessions.map((s) => s.id);
+
+  it('keeps everything when set to forever (0)', () => {
+    expect(pruneHistory(sessions, reviews, 0, now)).toEqual({ sessions, reviews });
+  });
+
+  it('"today only" keeps just today, whatever the time of day', () => {
+    expect(ids(1)).toEqual(['today']);
+    expect(pruneHistory(sessions, reviews, 1, now).reviews).toEqual([{ date: '2026-03-10' }]);
+  });
+
+  it('counts whole calendar days, today included', () => {
+    expect(ids(2)).toEqual(['today', 'yesterday']);
+    expect(ids(7)).toEqual(['today', 'yesterday', 'week']);
+    expect(ids(30)).toEqual(['today', 'yesterday', 'week', 'old']);
   });
 });

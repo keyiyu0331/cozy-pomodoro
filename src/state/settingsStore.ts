@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: { season: 'spring', weather: 'clear', timeOfDay: 'auto' },
   surpriseWeather: false,
   reducedMotion: false,
+  keepHistoryDays: 0,
 };
 
 interface SettingsStore extends Settings {

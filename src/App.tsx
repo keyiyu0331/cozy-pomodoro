@@ -1,15 +1,18 @@
 // Top-level layout. Connects the stores and hooks to the visual components:
 // reads timer + settings state, works out the time left, and hands plain
 // values down to TimerPanel. Also decides which dialog (if any) is showing.
-// (Phase 3 puts the pixel scene behind all this.)
+// The pixel scene sits behind everything; the season also recolours the UI.
 
 import { useEffect, useState } from 'react';
 import styles from './App.module.css';
 import { IntentionDialog } from './components/IntentionDialog';
 import { ReflectionDialog } from './components/ReflectionDialog';
 import { SettingsView } from './components/SettingsView';
+import { ThemePicker } from './components/ThemePicker';
 import { TimerPanel } from './components/TimerPanel';
 import { TodayPanel } from './components/TodayPanel';
+import { Scene } from './scene/Scene';
+import { SEASONS } from './scene/themeConfig';
 import { useHistoryStore } from './state/historyStore';
 import { useSettingsStore } from './state/settingsStore';
 import { useTimerStore } from './state/timerStore';
@@ -30,9 +33,20 @@ export default function App() {
   useShortcuts();
 
   // Read saved history from IndexedDB once, when the app opens.
+  // Then delete anything older than the "Keep history for" setting.
   useEffect(() => {
-    void useHistoryStore.getState().load();
+    const history = useHistoryStore.getState();
+    void history.load().then(() => history.prune(useSettingsStore.getState().keepHistoryDays));
   }, []);
+
+  // Recolour buttons and panels to match the season, by setting the CSS
+  // variables that every stylesheet reads its colours from.
+  const season = settings.theme.season;
+  useEffect(() => {
+    for (const [name, value] of Object.entries(SEASONS[season].ui)) {
+      document.documentElement.style.setProperty(name, value);
+    }
+  }, [season]);
 
   // Re-render ~4x a second while running, and check whether time is up.
   const tick = useTicker(timer.status === 'running');
@@ -57,7 +71,9 @@ export default function App() {
       : ((timer.focusCount - 1) % every) + 1;
 
   return (
-    <main className={styles.app} data-phase={timer.phase}>
+    <>
+      <Scene />
+      <main className={styles.app} data-phase={timer.phase}>
       <TimerPanel
         phaseLabel={phaseLabel}
         status={timer.status}
@@ -68,6 +84,8 @@ export default function App() {
         onReset={resetTimer}
         onSkip={skipTimer}
       />
+
+      <ThemePicker />
 
       <TodayPanel />
 
@@ -83,6 +101,7 @@ export default function App() {
 
       {dialog?.kind === 'intention' && <IntentionDialog />}
       {dialog?.kind === 'reflection' && <ReflectionDialog sessionId={dialog.sessionId} />}
-    </main>
+      </main>
+    </>
   );
 }

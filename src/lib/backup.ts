@@ -45,6 +45,7 @@ export function importAll(text: string): number {
   useSettingsStore.getState().update(file.settings);
   useTagStore.getState().replaceTags(file.tags);
   useHistoryStore.getState().replaceAll(file.sessions, file.reviews);
+  useHistoryStore.getState().prune(file.settings.keepHistoryDays);
   return file.sessions.length;
 }
 

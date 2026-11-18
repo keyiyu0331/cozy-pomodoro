@@ -45,6 +45,12 @@ export function SettingsView() {
         </p>
       )}
 
+      <label className={styles.row}>
+        <span>Reduced motion</span>
+        <input type="checkbox" checked={s.reducedMotion}
+          onChange={(e) => s.update({ reducedMotion: e.target.checked })} />
+      </label>
+
       <h2 className={styles.heading}>Chime</h2>
       <label className={styles.row}>
         <span>Sound</span>

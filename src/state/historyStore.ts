@@ -4,6 +4,7 @@
 
 import { get as idbGet, set as idbSet } from 'idb-keyval';
 import { create } from 'zustand';
+import { pruneHistory } from '../lib/retention';
 import type { DailyReview, SessionRecord } from '../types';
 
 const DB_KEY = 'hearth-history';
@@ -25,6 +26,8 @@ interface HistoryStore {
   updateSession: (id: string, changes: Partial<SessionRecord>) => void;
   /** Swap in a whole new history (import), or empty arrays (reset). */
   replaceAll: (sessions: SessionRecord[], reviews: DailyReview[]) => void;
+  /** Delete everything older than `keepDays` days (0 = keep all). */
+  prune: (keepDays: number) => void;
 }
 
 function save(sessions: SessionRecord[], reviews: DailyReview[]): void {
@@ -64,5 +67,13 @@ export const useHistoryStore = create<HistoryStore>()((set, get) => ({
   replaceAll: (sessions, reviews) => {
     set({ sessions, reviews });
     save(sessions, reviews);
+  },
+
+  prune: (keepDays) => {
+    const before = get();
+    const kept = pruneHistory(before.sessions, before.reviews, keepDays, Date.now());
+    const changed =
+      kept.sessions.length !== before.sessions.length || kept.reviews.length !== before.reviews.length;
+    if (changed) get().replaceAll(kept.sessions, kept.reviews);
   },
 }));

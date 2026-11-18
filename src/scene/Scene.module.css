@@ -1,0 +1,5 @@
+.canvas {
+  position: fixed; /* stays put while the panels scroll over it */
+  z-index: 0;
+  image-rendering: pixelated; /* scale up as sharp blocks, never blurry */
+}

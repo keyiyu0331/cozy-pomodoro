@@ -59,6 +59,7 @@ function saveFocusSession(completed: boolean): string | null {
 
   const record = buildSessionRecord(crypto.randomUUID(), active, now, left, completed);
   useHistoryStore.getState().addSession(record);
+  useHistoryStore.getState().prune(useSettingsStore.getState().keepHistoryDays);
   return record.id;
 }
 
