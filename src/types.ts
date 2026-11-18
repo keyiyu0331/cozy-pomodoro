@@ -26,6 +26,49 @@ export interface Settings {
   reviewTime?: string; // "21:00"
 }
 
+/** The scene a session was done in (time of day already resolved from 'auto'). */
+export interface ThemeSnapshot {
+  season: Season;
+  weather: Weather;
+  timeOfDay: TimeOfDay;
+}
+
+/** One finished (or abandoned) focus session, as saved in history. */
+export interface SessionRecord {
+  id: string; // uuid
+  startedAt: number; // epoch ms
+  endedAt: number;
+  plannedMinutes: number;
+  actualMinutes: number; // time actually focused, pauses excluded
+  completed: boolean; // false if reset/skipped early
+  intention?: string;
+  tagId?: string;
+  rating?: 1 | 2 | 3;
+  note?: string;
+  theme: ThemeSnapshot;
+}
+
+/** A focus session that is in progress: what we know before it ends. */
+export interface ActiveSession {
+  startedAt: number;
+  plannedMinutes: number;
+  intention?: string;
+  tagId?: string;
+  theme: ThemeSnapshot;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  color: string; // CSS colour, e.g. "#4d8a4a"
+}
+
+export interface DailyReview {
+  date: string; // YYYY-MM-DD
+  wentWell?: string;
+  improve?: string;
+}
+
 export const PHASE_LABELS: Record<Phase, string> = {
   focus: 'Focus',
   shortBreak: 'Short break',

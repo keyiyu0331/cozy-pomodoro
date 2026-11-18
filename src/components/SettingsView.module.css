@@ -75,3 +75,48 @@
   transform: translateY(3px);
   box-shadow: none;
 }
+
+.note {
+  margin-top: 10px;
+}
+
+.tagRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.color {
+  flex: none;
+  width: 36px;
+  height: 34px;
+  padding: 2px;
+  background: #fff;
+  border: 3px solid var(--wood-dark);
+  cursor: pointer;
+}
+
+.tagName {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  background: #fff;
+  border: 3px solid var(--wood-dark);
+  border-radius: 0;
+}
+
+.smallButton {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  background: var(--paper);
+  border: 3px solid var(--wood-dark);
+}
+
+.dangerButton {
+  composes: button;
+  color: var(--accent-ink);
+  background: #b5432f;
+}

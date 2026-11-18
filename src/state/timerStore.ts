@@ -1,13 +1,23 @@
-// Holds the live timer state and exposes the actions the UI can call.
+// Holds the live timer state and exposes the actions that change it.
 // All the actual rules live in timer/timerEngine.ts; this file just feeds the
 // engine the current time and settings and stores what it returns.
+//
+// The UI doesn't call these directly — it goes through timer/timerActions.ts,
+// which also handles the dialog, history, chime and notifications.
 
 import { create } from 'zustand';
 import * as engine from '../timer/timerEngine';
 import type { TimerState } from '../timer/timerEngine';
+import type { ActiveSession } from '../types';
 import { useSettingsStore } from './settingsStore';
 
-interface TimerActions {
+interface TimerExtras {
+  /** Details of the focus session in progress (null during breaks / when idle). */
+  activeSession: ActiveSession | null;
+  /** Intention + tag of the latest focus session, reused when auto-starting. */
+  lastFocus: { intention?: string; tagId?: string };
+  setActiveSession: (session: ActiveSession | null) => void;
+
   start: () => void; // also resumes from pause
   pause: () => void;
   reset: () => void;
@@ -21,8 +31,17 @@ export function currentFullMs(state: TimerState): number {
   return engine.phaseDurationMs(state.phase, useSettingsStore.getState());
 }
 
-export const useTimerStore = create<TimerState & TimerActions>()((set) => ({
+export const useTimerStore = create<TimerState & TimerExtras>()((set) => ({
   ...engine.initialTimerState,
+  activeSession: null,
+  lastFocus: {},
+
+  setActiveSession: (session) =>
+    set(
+      session
+        ? { activeSession: session, lastFocus: { intention: session.intention, tagId: session.tagId } }
+        : { activeSession: null },
+    ),
 
   start: () => set((s) => engine.start(s, currentFullMs(s), Date.now())),
   pause: () => set((s) => engine.pause(s, Date.now())),

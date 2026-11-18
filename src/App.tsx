@@ -1,14 +1,20 @@
 // Top-level layout. Connects the stores and hooks to the visual components:
 // reads timer + settings state, works out the time left, and hands plain
-// values down to TimerPanel. (Phase 3 puts the pixel scene behind all this.)
+// values down to TimerPanel. Also decides which dialog (if any) is showing.
+// (Phase 3 puts the pixel scene behind all this.)
 
 import { useEffect, useState } from 'react';
 import styles from './App.module.css';
+import { IntentionDialog } from './components/IntentionDialog';
+import { ReflectionDialog } from './components/ReflectionDialog';
 import { SettingsView } from './components/SettingsView';
 import { TimerPanel } from './components/TimerPanel';
+import { TodayPanel } from './components/TodayPanel';
+import { useHistoryStore } from './state/historyStore';
 import { useSettingsStore } from './state/settingsStore';
 import { useTimerStore } from './state/timerStore';
-import { handlePhaseEnd, toggleTimer } from './timer/timerActions';
+import { useUiStore } from './state/uiStore';
+import { handlePhaseEnd, resetTimer, skipTimer, toggleTimer } from './timer/timerActions';
 import { formatTime, isFinished, phaseDurationMs, remainingMs } from './timer/timerEngine';
 import { useShortcuts } from './timer/useShortcuts';
 import { useTicker } from './timer/useTicker';
@@ -19,7 +25,14 @@ export default function App() {
   const settings = useSettingsStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
+  const dialog = useUiStore((s) => s.dialog);
+
   useShortcuts();
+
+  // Read saved history from IndexedDB once, when the app opens.
+  useEffect(() => {
+    void useHistoryStore.getState().load();
+  }, []);
 
   // Re-render ~4x a second while running, and check whether time is up.
   const tick = useTicker(timer.status === 'running');
@@ -52,9 +65,11 @@ export default function App() {
         cycleDone={cycleDone}
         cycleLength={every}
         onToggle={toggleTimer}
-        onReset={timer.reset}
-        onSkip={timer.skip}
+        onReset={resetTimer}
+        onSkip={skipTimer}
       />
+
+      <TodayPanel />
 
       <button
         className={styles.settingsToggle}
@@ -65,6 +80,9 @@ export default function App() {
       </button>
 
       {settingsOpen && <SettingsView />}
+
+      {dialog?.kind === 'intention' && <IntentionDialog />}
+      {dialog?.kind === 'reflection' && <ReflectionDialog sessionId={dialog.sessionId} />}
     </main>
   );
 }

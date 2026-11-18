@@ -4,7 +4,9 @@
 import { CHIMES, playChime } from '../audio/chime';
 import { requestNotificationPermission } from '../lib/notifications';
 import { useSettingsStore } from '../state/settingsStore';
+import { DataSection } from './DataSection';
 import { NumberField } from './NumberField';
+import { TagEditor } from './TagEditor';
 import styles from './SettingsView.module.css';
 
 export function SettingsView() {
@@ -70,6 +72,12 @@ export function SettingsView() {
           Restore defaults
         </button>
       </div>
+
+      <h2 className={styles.heading}>Tags</h2>
+      <TagEditor />
+
+      <h2 className={styles.heading}>Data</h2>
+      <DataSection />
     </section>
   );
 }

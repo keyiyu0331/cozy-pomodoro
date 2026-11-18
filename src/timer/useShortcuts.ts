@@ -1,12 +1,14 @@
 // Keyboard shortcuts: Space = start/pause, R = reset, S = skip.
 
 import { useEffect } from 'react';
-import { useTimerStore } from '../state/timerStore';
-import { toggleTimer } from './timerActions';
+import { useUiStore } from '../state/uiStore';
+import { resetTimer, skipTimer, toggleTimer } from './timerActions';
 
 export function useShortcuts(): void {
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      // Shortcuts are off while a dialog is open.
+      if (useUiStore.getState().dialog) return;
       // Don't hijack typing in a field, or combos like Cmd+R (reload).
       const el = e.target as HTMLElement | null;
       if (el && ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) return;
@@ -16,9 +18,9 @@ export function useShortcuts(): void {
         e.preventDefault(); // stops page scroll and "clicking" a focused button
         toggleTimer();
       } else if (e.code === 'KeyR') {
-        useTimerStore.getState().reset();
+        resetTimer();
       } else if (e.code === 'KeyS') {
-        useTimerStore.getState().skip();
+        skipTimer();
       }
     }
     window.addEventListener('keydown', onKeyDown);

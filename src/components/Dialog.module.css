@@ -1,0 +1,136 @@
+/* Styles for the dialog frame and the form pieces both dialogs share. */
+
+.dialog {
+  width: min(420px, calc(100vw - 32px));
+  padding: 20px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 4px solid var(--wood-dark);
+  box-shadow:
+    0 0 0 4px var(--wood),
+    0 0 0 8px var(--wood-dark);
+}
+
+.dialog::backdrop {
+  background: rgb(40 28 16 / 0.45);
+}
+
+.title {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.label {
+  display: block;
+  margin: 14px 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 10px;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 3px solid var(--wood-dark);
+  border-radius: 0;
+}
+
+.textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chip,
+.chipSelected {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 5px 9px;
+  font-size: 13px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  text-align: left;
+  background: var(--paper);
+  border: 2px solid var(--wood-dark);
+}
+
+.chipSelected {
+  color: var(--paper);
+  background: var(--wood-dark);
+}
+
+.swatch {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgb(0 0 0 / 0.35);
+}
+
+.hearts {
+  display: flex;
+  gap: 8px;
+}
+
+.heart,
+.heartOn {
+  width: 48px;
+  height: 44px;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #cdbfa6;
+  background: #fff;
+  border: 3px solid var(--wood-dark);
+}
+
+.heartOn {
+  color: var(--accent);
+}
+
+.context {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.button,
+.primary {
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--paper);
+  border: 3px solid var(--wood-dark);
+  box-shadow: 0 3px 0 var(--wood-dark);
+}
+
+.primary {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+.button:active,
+.primary:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
