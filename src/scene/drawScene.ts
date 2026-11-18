@@ -10,6 +10,7 @@ import { drawOverlay } from './layers/overlay';
 import { drawSky } from './layers/sky';
 import { drawTrees } from './layers/trees';
 import { getSceneTheme, type SceneState } from './themeConfig';
+import { drawWeather } from './weather';
 
 // Back to front. To add a layer, write its file and add it to this list.
 const LAYERS: Layer[] = [
@@ -18,11 +19,12 @@ const LAYERS: Layer[] = [
   drawTrees,
   drawCottage,
   drawGround,
+  drawWeather, // rain, snow, leaves, fog...
   drawOverlay,
   drawLights, // after the overlay, so lights aren't dimmed by the night tint
 ];
 
-export function drawScene(ctx: Ctx, state: SceneState, t: number): void {
-  const theme = getSceneTheme(state);
+export function drawScene(ctx: Ctx, state: SceneState, t: number, animated = true): void {
+  const theme = getSceneTheme(state, animated);
   for (const layer of LAYERS) layer(ctx, theme, t);
 }

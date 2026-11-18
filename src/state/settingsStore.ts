@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS: Settings = {
   ambientMode: 'focusOnly',
   layerVolumes: {},
   masterVolume: 0.7,
+  muted: false,
   theme: { season: 'spring', weather: 'clear', timeOfDay: 'auto' },
   surpriseWeather: false,
   reducedMotion: false,

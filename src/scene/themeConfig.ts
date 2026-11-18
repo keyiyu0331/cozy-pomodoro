@@ -1,12 +1,16 @@
-// DATA, not logic: what each season and time of day looks like.
+// DATA, not logic: what each season, weather and time of day looks like.
 // The layer files read colours from here; the UI reads its palette from here.
 // To restyle a season, edit its entry — no drawing code needs to change.
 
-import type { Season, TimeOfDay } from '../types';
+import type { Season, TimeOfDay, Weather } from '../types';
 
 /** Everything that depends on the season. */
 export interface SeasonLook {
   label: string;
+  /** Colours of what blows past in windy weather (petals, leaves, snow dust). */
+  windDebris: string[];
+  /** Weathers that feel right for this season (others are still allowed). */
+  suggestedWeather: Weather[];
   hillFar: string;
   hillNear: string;
   ground: string;
@@ -40,12 +44,40 @@ export interface SkyLook {
   windowsLit: boolean;
 }
 
+/** Everything that depends on the weather. */
+export interface WeatherLook {
+  label: string;
+  /**
+   * Which particle effects to draw, by name. Each name must have an entry in
+   * the PARTICLES table in scene/weather/index.ts.
+   */
+  particles: string[];
+  /** How heavy the effect is (1 = normal). */
+  intensity: number;
+  /** Grey wash for cloudy weather, or null for a clear sky (sun/moon/stars show). */
+  overcast: string | null;
+  lightning: boolean;
+}
+
+export const WEATHER_ORDER: Weather[] = ['clear', 'rain', 'storm', 'snow', 'windy', 'fog'];
+
+export const WEATHERS: Record<Weather, WeatherLook> = {
+  clear: { label: 'Clear', particles: [], intensity: 1, overcast: null, lightning: false },
+  rain: { label: 'Rain', particles: ['rain'], intensity: 1, overcast: 'rgba(70, 80, 100, 0.35)', lightning: false },
+  storm: { label: 'Storm', particles: ['rain'], intensity: 1.8, overcast: 'rgba(38, 42, 68, 0.55)', lightning: true },
+  snow: { label: 'Snow', particles: ['snow'], intensity: 1, overcast: 'rgba(200, 210, 225, 0.30)', lightning: false },
+  windy: { label: 'Windy', particles: ['leaves'], intensity: 1, overcast: null, lightning: false },
+  fog: { label: 'Fog', particles: ['fog'], intensity: 1, overcast: 'rgba(214, 218, 222, 0.28)', lightning: false },
+};
+
 export const SEASON_ORDER: Season[] = ['spring', 'summer', 'autumn', 'winter'];
 export const TIME_ORDER: TimeOfDay[] = ['morning', 'afternoon', 'evening', 'night'];
 
 export const SEASONS: Record<Season, SeasonLook> = {
   spring: {
     label: 'Spring',
+    windDebris: ['#f7b6d2', '#ffffff'],
+    suggestedWeather: ['clear', 'rain', 'windy', 'fog'],
     hillFar: '#9cc7a0',
     hillNear: '#7fb873',
     ground: '#8fce6a',
@@ -72,6 +104,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   summer: {
     label: 'Summer',
+    windDebris: ['#57b554', '#8fd46e'],
+    suggestedWeather: ['clear', 'rain', 'storm', 'windy'],
     hillFar: '#7fb59a',
     hillNear: '#5ea85c',
     ground: '#6cc04f',
@@ -98,6 +132,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   autumn: {
     label: 'Autumn',
+    windDebris: ['#d9642b', '#f0a030', '#b8432a'],
+    suggestedWeather: ['clear', 'rain', 'storm', 'windy', 'fog'],
     hillFar: '#c9a56e',
     hillNear: '#c2853f',
     ground: '#c9a04a',
@@ -124,6 +160,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   winter: {
     label: 'Winter',
+    windDebris: ['#ffffff', '#dfe8f2'],
+    suggestedWeather: ['clear', 'snow', 'windy', 'fog'],
     hillFar: '#cfdcec',
     hillNear: '#e3ecf5',
     ground: '#f2f6fb',
@@ -193,9 +231,10 @@ export const SKIES: Record<TimeOfDay, SkyLook> = {
   },
 };
 
-/** Which scene to show. (Phase 4 adds weather here.) */
+/** Which scene to show. */
 export interface SceneState {
   season: Season;
+  weather: Weather;
   timeOfDay: TimeOfDay;
 }
 
@@ -203,9 +242,18 @@ export interface SceneState {
 export interface SceneTheme {
   state: SceneState;
   season: SeasonLook;
+  weather: WeatherLook;
   sky: SkyLook;
+  /** false when reduced motion is on: moving particles and flashes are skipped. */
+  animated: boolean;
 }
 
-export function getSceneTheme(state: SceneState): SceneTheme {
-  return { state, season: SEASONS[state.season], sky: SKIES[state.timeOfDay] };
+export function getSceneTheme(state: SceneState, animated: boolean): SceneTheme {
+  return {
+    state,
+    season: SEASONS[state.season],
+    weather: WEATHERS[state.weather],
+    sky: SKIES[state.timeOfDay],
+    animated,
+  };
 }

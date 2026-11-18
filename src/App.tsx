@@ -5,7 +5,9 @@
 
 import { useEffect, useState } from 'react';
 import styles from './App.module.css';
+import { useAmbientAudio } from './audio/useAmbientAudio';
 import { IntentionDialog } from './components/IntentionDialog';
+import { Mixer } from './components/Mixer';
 import { ReflectionDialog } from './components/ReflectionDialog';
 import { SettingsView } from './components/SettingsView';
 import { ThemePicker } from './components/ThemePicker';
@@ -31,6 +33,7 @@ export default function App() {
   const dialog = useUiStore((s) => s.dialog);
 
   useShortcuts();
+  useAmbientAudio();
 
   // Read saved history from IndexedDB once, when the app opens.
   // Then delete anything older than the "Keep history for" setting.
@@ -86,6 +89,8 @@ export default function App() {
       />
 
       <ThemePicker />
+
+      <Mixer />
 
       <TodayPanel />
 

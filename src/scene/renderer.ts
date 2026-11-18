@@ -57,11 +57,11 @@ export function createRenderer(canvas: HTMLCanvasElement): Renderer {
     const t = animated ? now / 1000 : 0;
 
     if (fadeStart === null) {
-      drawScene(ctx, state, t);
+      drawScene(ctx, state, t, animated);
       return;
     }
     const progress = Math.min(1, (now - fadeStart) / FADE_MS);
-    drawScene(incoming.ctx, state, t);
+    drawScene(incoming.ctx, state, t, animated);
     ctx.globalAlpha = 1;
     ctx.drawImage(photo.canvas, 0, 0);
     ctx.globalAlpha = progress;
@@ -74,7 +74,12 @@ export function createRenderer(canvas: HTMLCanvasElement): Renderer {
 
   return {
     setState(next) {
-      if (state && state.season === next.season && state.timeOfDay === next.timeOfDay) return;
+      const same =
+        state &&
+        state.season === next.season &&
+        state.weather === next.weather &&
+        state.timeOfDay === next.timeOfDay;
+      if (same) return;
       if (state) {
         photo.ctx.drawImage(canvas, 0, 0); // works mid-fade too: we photograph the blend
         fadeStart = performance.now();

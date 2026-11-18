@@ -1,5 +1,5 @@
 // The <canvas> behind the whole app. This component only does the React
-// part: it creates the renderer once, then passes on changes (season, time
+// part: it creates the renderer once, then passes on changes (season, weather, time
 // of day, reduced motion) and sizes the canvas to cover the window.
 
 import { useEffect, useRef } from 'react';
@@ -13,6 +13,7 @@ export function Scene() {
   const rendererRef = useRef<Renderer | null>(null);
 
   const season = useSettingsStore((s) => s.theme.season);
+  const weather = useSettingsStore((s) => s.theme.weather);
   const timeOfDay = useTimeOfDay();
   const reducedMotion = useReducedMotion();
   const layout = useSceneLayout();
@@ -24,8 +25,8 @@ export function Scene() {
   }, []);
 
   useEffect(() => {
-    rendererRef.current?.setState({ season, timeOfDay });
-  }, [season, timeOfDay]);
+    rendererRef.current?.setState({ season, weather, timeOfDay });
+  }, [season, weather, timeOfDay]);
 
   useEffect(() => {
     rendererRef.current?.setAnimated(!reducedMotion);

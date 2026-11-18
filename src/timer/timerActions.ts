@@ -9,6 +9,7 @@ import { playChime, unlockAudio } from '../audio/chime';
 import { requestNotificationPermission, showNotification } from '../lib/notifications';
 import { buildSessionRecord } from '../lib/sessionRecord';
 import { timeOfDayAt } from '../lib/timeOfDay';
+import { SEASONS } from '../scene/themeConfig';
 import { useHistoryStore } from '../state/historyStore';
 import { useSettingsStore } from '../state/settingsStore';
 import { useTimerStore } from '../state/timerStore';
@@ -75,8 +76,20 @@ export function toggleTimer(): void {
   }
 }
 
+/** "Surprise me": switch to a different weather that suits the season. */
+function surpriseWeather(): void {
+  const settings = useSettingsStore.getState();
+  if (!settings.surpriseWeather) return;
+  const { season, weather } = settings.theme;
+  const options = SEASONS[season].suggestedWeather.filter((w) => w !== weather);
+  if (options.length === 0) return;
+  const pick = options[Math.floor(Math.random() * options.length)];
+  settings.update({ theme: { ...settings.theme, weather: pick } });
+}
+
 /** The intention dialog was confirmed: start the focus session. */
 export function beginFocus(intention: string, tagId: string | undefined): void {
+  surpriseWeather();
   useTimerStore.getState().setActiveSession(newActiveSession(intention, tagId));
   useUiStore.getState().closeDialog();
   startClock();
@@ -104,6 +117,7 @@ export function handlePhaseEnd(): void {
   if (after.phase === 'focus' && after.status === 'running') {
     // Auto-start went straight into a new focus session, so there was no
     // dialog: carry on with the same intention and tag as last time.
+    surpriseWeather();
     after.setActiveSession(newActiveSession(after.lastFocus.intention, after.lastFocus.tagId));
   }
   if (savedId) useUiStore.getState().openReflection(savedId); // "How did it go?"

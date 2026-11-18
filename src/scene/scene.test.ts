@@ -3,7 +3,9 @@ import type { Ctx } from './draw';
 import { mix, rand } from './draw';
 import { drawScene } from './drawScene';
 import { coverLayout } from './scale';
-import { SEASON_ORDER, SEASONS, TIME_ORDER } from './themeConfig';
+import { SEASON_ORDER, SEASONS, TIME_ORDER, WEATHER_ORDER, WEATHERS } from './themeConfig';
+import { PARTICLES } from './weather';
+import { flashStrength, strikeTime, STRIKE_PERIOD } from './weather/lightning';
 
 /** A stand-in canvas context that accepts any drawing call and counts fillRects. */
 function fakeContext(): { ctx: Ctx; rects: () => number } {
@@ -22,16 +24,60 @@ function fakeContext(): { ctx: Ctx; rects: () => number } {
 }
 
 describe('drawScene', () => {
-  it('draws every season × time of day without errors', () => {
+  it('draws every season × weather × time of day without errors', () => {
     for (const season of SEASON_ORDER) {
-      for (const timeOfDay of TIME_ORDER) {
-        for (const t of [0, 12.34]) {
-          const { ctx, rects } = fakeContext();
-          expect(() => drawScene(ctx, { season, timeOfDay }, t)).not.toThrow();
-          expect(rects()).toBeGreaterThan(500);
+      for (const weather of WEATHER_ORDER) {
+        for (const timeOfDay of TIME_ORDER) {
+          for (const t of [0, 12.34, 9999.5]) {
+            const { ctx, rects } = fakeContext();
+            expect(() => drawScene(ctx, { season, weather, timeOfDay }, t)).not.toThrow();
+            expect(rects()).toBeGreaterThan(500);
+          }
         }
       }
     }
+  });
+
+  it('draws fewer things with reduced motion (moving particles are skipped)', () => {
+    const state = { season: 'autumn', weather: 'rain', timeOfDay: 'afternoon' } as const;
+    const moving = fakeContext();
+    const still = fakeContext();
+    drawScene(moving.ctx, state, 5, true);
+    drawScene(still.ctx, state, 0, false);
+    expect(still.rects()).toBeLessThan(moving.rects());
+  });
+});
+
+describe('weather config', () => {
+  it('every particle name used by a weather exists in the PARTICLES table', () => {
+    for (const weather of WEATHER_ORDER) {
+      for (const name of WEATHERS[weather].particles) {
+        expect(PARTICLES[name], `${weather} → ${name}`).toBeDefined();
+      }
+    }
+  });
+
+  it('every season suggests at least two weathers', () => {
+    for (const season of SEASON_ORDER) {
+      expect(SEASONS[season].suggestedWeather.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
+
+describe('lightning', () => {
+  it('strikes once per period, inside that period', () => {
+    for (let cycle = 0; cycle < 50; cycle++) {
+      const at = strikeTime(cycle);
+      expect(at).toBeGreaterThanOrEqual(cycle * STRIKE_PERIOD);
+      expect(at).toBeLessThan((cycle + 1) * STRIKE_PERIOD - 1);
+    }
+  });
+
+  it('flashes right at the strike and is dark just before and well after', () => {
+    const at = strikeTime(3);
+    expect(flashStrength(at + 0.01)).toBeGreaterThan(0);
+    expect(flashStrength(at - 0.05)).toBe(0);
+    expect(flashStrength(at + 1)).toBe(0);
   });
 });
 

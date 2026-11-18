@@ -20,6 +20,7 @@ export interface Settings {
   ambientMode: 'always' | 'focusOnly' | 'off';
   layerVolumes: Record<string, number>;
   masterVolume: number;
+  muted: boolean;
   theme: { season: Season; weather: Weather; timeOfDay: TimeOfDay | 'auto' };
   surpriseWeather: boolean;
   reducedMotion: boolean;
