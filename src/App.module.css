@@ -23,3 +23,8 @@
   transform: translateY(4px);
   box-shadow: none;
 }
+
+.toggles {
+  display: flex;
+  gap: 12px;
+}

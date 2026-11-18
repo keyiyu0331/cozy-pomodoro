@@ -6,13 +6,16 @@
 import { useEffect, useState } from 'react';
 import styles from './App.module.css';
 import { useAmbientAudio } from './audio/useAmbientAudio';
+import { HistoryView } from './components/HistoryView';
 import { IntentionDialog } from './components/IntentionDialog';
 import { Mixer } from './components/Mixer';
 import { ReflectionDialog } from './components/ReflectionDialog';
+import { ReviewDialog } from './components/ReviewDialog';
 import { SettingsView } from './components/SettingsView';
 import { ThemePicker } from './components/ThemePicker';
 import { TimerPanel } from './components/TimerPanel';
 import { TodayPanel } from './components/TodayPanel';
+import { useReviewPrompt } from './lib/useReviewPrompt';
 import { Scene } from './scene/Scene';
 import { SEASONS } from './scene/themeConfig';
 import { useHistoryStore } from './state/historyStore';
@@ -29,11 +32,13 @@ export default function App() {
   const timer = useTimerStore();
   const settings = useSettingsStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const dialog = useUiStore((s) => s.dialog);
 
   useShortcuts();
   useAmbientAudio();
+  useReviewPrompt();
 
   // Read saved history from IndexedDB once, when the app opens.
   // Then delete anything older than the "Keep history for" setting.
@@ -94,18 +99,29 @@ export default function App() {
 
       <TodayPanel />
 
-      <button
-        className={styles.settingsToggle}
-        onClick={() => setSettingsOpen((open) => !open)}
-        aria-expanded={settingsOpen}
-      >
-        {settingsOpen ? 'Close settings' : 'Settings'}
-      </button>
+      <div className={styles.toggles}>
+        <button
+          className={styles.settingsToggle}
+          onClick={() => setHistoryOpen((open) => !open)}
+          aria-expanded={historyOpen}
+        >
+          {historyOpen ? 'Close history' : 'History'}
+        </button>
+        <button
+          className={styles.settingsToggle}
+          onClick={() => setSettingsOpen((open) => !open)}
+          aria-expanded={settingsOpen}
+        >
+          {settingsOpen ? 'Close settings' : 'Settings'}
+        </button>
+      </div>
 
+      {historyOpen && <HistoryView />}
       {settingsOpen && <SettingsView />}
 
       {dialog?.kind === 'intention' && <IntentionDialog />}
       {dialog?.kind === 'reflection' && <ReflectionDialog sessionId={dialog.sessionId} />}
+      {dialog?.kind === 'review' && <ReviewDialog date={dialog.date} />}
       </main>
     </>
   );

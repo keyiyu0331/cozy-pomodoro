@@ -1,3 +1,5 @@
+/* Panel styles shared by the Today and History panels. */
+
 .panel {
   width: 100%;
   max-width: 380px;
@@ -31,75 +33,12 @@
   color: var(--ink-soft);
 }
 
-.list {
-  margin: 12px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.item {
-  padding: 10px 0;
-  border-top: 2px dashed var(--wood-light);
-}
-
-.line {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  font-size: 14px;
-}
-
-.when,
-.minutes {
-  flex: none;
+.button {
+  margin-top: 12px;
+  padding: 6px 10px;
   font-size: 12px;
-  color: var(--ink-soft);
-}
-
-.intention {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.meta:not(:empty) {
-  margin-top: 4px;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.swatch {
-  width: 10px;
-  height: 10px;
-  border: 1px solid rgb(0 0 0 / 0.35);
-}
-
-.rating {
-  color: var(--accent);
-  letter-spacing: 2px;
-}
-
-.stopped {
-  color: var(--ink-soft);
-  font-style: italic;
-}
-
-.note {
-  margin: 6px 0 0;
-  font-size: 13px;
-  color: var(--ink-soft);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--paper);
+  border: 2px solid var(--wood-dark);
 }

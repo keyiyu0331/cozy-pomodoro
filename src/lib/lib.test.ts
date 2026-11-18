@@ -2,7 +2,21 @@ import { describe, expect, it } from 'vitest';
 import type { ActiveSession, SessionRecord, Settings } from '../types';
 import { pruneHistory } from './retention';
 import { buildSessionRecord } from './sessionRecord';
-import { dayKey, formatMinutes, recentIntentions, sessionsOnDay, totalMinutes } from './stats';
+import { isReviewDue } from './review';
+import {
+  addDays,
+  currentStreak,
+  dayKey,
+  formatMinutes,
+  growthLevel,
+  heatmapWeeks,
+  minutesByDay,
+  recentIntentions,
+  sessionsOnDay,
+  totalMinutes,
+  weekByTag,
+  weekStart,
+} from './stats';
 import { buildExport, parseImport } from './storage';
 import { timeOfDayAt } from './timeOfDay';
 
@@ -183,5 +197,101 @@ describe('pruneHistory', () => {
     expect(ids(2)).toEqual(['today', 'yesterday']);
     expect(ids(7)).toEqual(['today', 'yesterday', 'week']);
     expect(ids(30)).toEqual(['today', 'yesterday', 'week', 'old']);
+  });
+});
+
+describe('calendar helpers', () => {
+  it('addDays crosses month and year ends', () => {
+    expect(addDays('2026-03-01', -1)).toBe('2026-02-28');
+    expect(addDays('2026-12-31', 1)).toBe('2027-01-01');
+    expect(addDays('2026-03-10', 0)).toBe('2026-03-10');
+  });
+
+  it('weekStart finds the Monday', () => {
+    expect(weekStart('2026-03-09')).toBe('2026-03-09'); // a Monday
+    expect(weekStart('2026-03-11')).toBe('2026-03-09'); // Wednesday
+    expect(weekStart('2026-03-15')).toBe('2026-03-09'); // Sunday
+  });
+});
+
+describe('history stats', () => {
+  // Tuesday 10 March 2026, 3pm.
+  const now = at(10, 15);
+  const all = [
+    session({ startedAt: at(10, 9), actualMinutes: 25, tagId: 'a' }),
+    session({ startedAt: at(10, 11), actualMinutes: 50, tagId: 'b' }),
+    session({ startedAt: at(9, 9), actualMinutes: 30 }),
+    session({ startedAt: at(8, 9), actualMinutes: 10, tagId: 'a', completed: false }),
+    session({ startedAt: at(2, 9), actualMinutes: 130, tagId: 'a' }),
+  ];
+
+  it('minutesByDay adds up each day', () => {
+    expect(minutesByDay(all)).toEqual({
+      '2026-03-10': 75,
+      '2026-03-09': 30,
+      '2026-03-08': 10,
+      '2026-03-02': 130,
+    });
+  });
+
+  it('growthLevel steps up with more focus', () => {
+    expect([0, 10, 25, 59, 60, 119, 120, 500].map(growthLevel)).toEqual([0, 1, 2, 2, 3, 3, 4, 4]);
+  });
+
+  it('heatmapWeeks is whole Monday-to-Sunday weeks ending with this week', () => {
+    const grid = heatmapWeeks(all, now, 3);
+    expect(grid.length).toBe(3);
+    expect(grid.every((week) => week.length === 7)).toBe(true);
+    expect(grid[0][0].day).toBe('2026-02-23');
+    expect(grid[2][0].day).toBe('2026-03-09');
+    expect(grid[2][6].day).toBe('2026-03-15');
+
+    expect(grid[2][1]).toEqual({ day: '2026-03-10', minutes: 75, level: 3, future: false });
+    expect(grid[1][0]).toMatchObject({ day: '2026-03-02', minutes: 130, level: 4 });
+    expect(grid[2][2]).toMatchObject({ day: '2026-03-11', minutes: 0, level: 0, future: true });
+  });
+
+  it('weekByTag splits each day by tag, with untagged under ""', () => {
+    const bars = weekByTag(all, '2026-03-09');
+    expect(bars.map((b) => b.day)).toEqual([
+      '2026-03-09', '2026-03-10', '2026-03-11', '2026-03-12', '2026-03-13', '2026-03-14', '2026-03-15',
+    ]);
+    expect(bars[0]).toEqual({ day: '2026-03-09', total: 30, byTag: { '': 30 } });
+    expect(bars[1]).toEqual({ day: '2026-03-10', total: 75, byTag: { a: 25, b: 50 } });
+    expect(bars[2].total).toBe(0);
+  });
+
+  it('currentStreak counts completed days back from today', () => {
+    // 10th and 9th completed; the 8th was only an abandoned session.
+    expect(currentStreak(all, now)).toBe(2);
+    expect(currentStreak([], now)).toBe(0);
+  });
+
+  it('currentStreak is not broken by a today that has not started yet', () => {
+    expect(currentStreak(all, at(11, 8))).toBe(2); // nothing on the 11th yet
+    expect(currentStreak(all, at(12, 8))).toBe(0); // the 11th was missed
+  });
+});
+
+describe('isReviewDue', () => {
+  const evening = new Date(2026, 2, 10, 21, 30);
+  const today = '2026-03-10';
+
+  it('is due once the chosen time has passed', () => {
+    expect(isReviewDue('21:00', evening, false, null)).toBe(true);
+    expect(isReviewDue('21:30', evening, false, null)).toBe(true);
+    expect(isReviewDue('22:00', evening, false, null)).toBe(false);
+  });
+
+  it('is never due when switched off or malformed', () => {
+    expect(isReviewDue(undefined, evening, false, null)).toBe(false);
+    expect(isReviewDue('', evening, false, null)).toBe(false);
+    expect(isReviewDue('soon', evening, false, null)).toBe(false);
+  });
+
+  it('asks only once a day, and not if today is already reviewed', () => {
+    expect(isReviewDue('21:00', evening, true, null)).toBe(false);
+    expect(isReviewDue('21:00', evening, false, today)).toBe(false);
+    expect(isReviewDue('21:00', evening, false, '2026-03-09')).toBe(true);
   });
 });

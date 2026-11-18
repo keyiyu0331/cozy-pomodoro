@@ -1,21 +1,22 @@
-// Today's summary: session count, total focus minutes, and the list of
-// today's sessions with their intention, tag, rating and note.
+// Today's summary: session count, total focus minutes, the list of today's
+// sessions, and today's review (with a button to write or edit it).
 
 import { dayKey, formatMinutes, sessionsOnDay, totalMinutes } from '../lib/stats';
 import { useHistoryStore } from '../state/historyStore';
-import { useTagStore } from '../state/tagStore';
+import { useUiStore } from '../state/uiStore';
+import { ReviewText } from './ReviewText';
+import { SessionList } from './SessionList';
 import styles from './TodayPanel.module.css';
-
-function clockTime(timestamp: number): string {
-  return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
 
 export function TodayPanel() {
   const sessions = useHistoryStore((s) => s.sessions);
-  const tags = useTagStore((s) => s.tags);
+  const reviews = useHistoryStore((s) => s.reviews);
+  const openReview = useUiStore((s) => s.openReview);
 
-  const today = sessionsOnDay(sessions, dayKey(Date.now()));
+  const day = dayKey(Date.now());
+  const today = sessionsOnDay(sessions, day);
   const completedCount = today.filter((s) => s.completed).length;
+  const review = reviews.find((r) => r.date === day);
 
   return (
     <section className={styles.panel} aria-label="Today">
@@ -33,36 +34,13 @@ export function TodayPanel() {
       {today.length === 0 ? (
         <p className={styles.empty}>No sessions yet today. Press Start to begin one.</p>
       ) : (
-        <ul className={styles.list}>
-          {today.map((s) => {
-            const tag = tags.find((t) => t.id === s.tagId);
-            return (
-              <li key={s.id} className={styles.item}>
-                <div className={styles.line}>
-                  <span className={styles.when}>{clockTime(s.startedAt)}</span>
-                  <span className={styles.intention}>{s.intention ?? 'Focus session'}</span>
-                  <span className={styles.minutes}>{formatMinutes(s.actualMinutes)} min</span>
-                </div>
-                <div className={styles.meta}>
-                  {tag && (
-                    <span className={styles.tag}>
-                      <span className={styles.swatch} style={{ background: tag.color }} />
-                      {tag.name}
-                    </span>
-                  )}
-                  {s.rating && (
-                    <span className={styles.rating} aria-label={`${s.rating} of 3 hearts`}>
-                      {'♥'.repeat(s.rating)}
-                    </span>
-                  )}
-                  {!s.completed && <span className={styles.stopped}>stopped early</span>}
-                </div>
-                {s.note && <p className={styles.note}>{s.note}</p>}
-              </li>
-            );
-          })}
-        </ul>
+        <SessionList sessions={today} />
       )}
+
+      <ReviewText review={review} />
+      <button className={styles.button} onClick={() => openReview(day)}>
+        {review ? 'Edit today’s review' : 'Write today’s review'}
+      </button>
     </section>
   );
 }

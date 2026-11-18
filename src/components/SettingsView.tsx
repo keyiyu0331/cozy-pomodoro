@@ -46,6 +46,18 @@ export function SettingsView() {
       )}
 
       <label className={styles.row}>
+        <span>End-of-day review prompt</span>
+        <input type="checkbox" checked={s.reviewTime !== undefined}
+          onChange={(e) => s.update({ reviewTime: e.target.checked ? '21:00' : undefined })} />
+      </label>
+      {s.reviewTime !== undefined && (
+        <label className={styles.row}>
+          <span>Ask at</span>
+          <input type="time" className={styles.select} value={s.reviewTime}
+            onChange={(e) => { if (e.target.value) s.update({ reviewTime: e.target.value }); }} />
+        </label>
+      )}
+      <label className={styles.row}>
         <span>Reduced motion</span>
         <input type="checkbox" checked={s.reducedMotion}
           onChange={(e) => s.update({ reducedMotion: e.target.checked })} />

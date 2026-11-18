@@ -19,6 +19,8 @@ interface StoredHistory {
 interface HistoryStore {
   sessions: SessionRecord[];
   reviews: DailyReview[];
+  /** true once saved history has been read from IndexedDB. */
+  loaded: boolean;
   /** Read saved history from IndexedDB. Call once when the app opens. */
   load: () => Promise<void>;
   addSession: (record: SessionRecord) => void;
@@ -28,6 +30,8 @@ interface HistoryStore {
   replaceAll: (sessions: SessionRecord[], reviews: DailyReview[]) => void;
   /** Delete everything older than `keepDays` days (0 = keep all). */
   prune: (keepDays: number) => void;
+  /** Add or replace the review for its date. An empty review is removed. */
+  saveReview: (review: DailyReview) => void;
 }
 
 function save(sessions: SessionRecord[], reviews: DailyReview[]): void {
@@ -38,6 +42,7 @@ function save(sessions: SessionRecord[], reviews: DailyReview[]): void {
 export const useHistoryStore = create<HistoryStore>()((set, get) => ({
   sessions: [],
   reviews: [],
+  loaded: false,
 
   load: async () => {
     try {
@@ -49,6 +54,8 @@ export const useHistoryStore = create<HistoryStore>()((set, get) => ({
       set({ sessions: [...stored.sessions, ...fresh], reviews: stored.reviews ?? [] });
     } catch (err) {
       console.warn('Could not load history', err);
+    } finally {
+      set({ loaded: true });
     }
   },
 
@@ -67,6 +74,12 @@ export const useHistoryStore = create<HistoryStore>()((set, get) => ({
   replaceAll: (sessions, reviews) => {
     set({ sessions, reviews });
     save(sessions, reviews);
+  },
+
+  saveReview: (review) => {
+    const others = get().reviews.filter((r) => r.date !== review.date);
+    const empty = !review.wentWell && !review.improve;
+    get().replaceAll(get().sessions, empty ? others : [...others, review]);
   },
 
   prune: (keepDays) => {
