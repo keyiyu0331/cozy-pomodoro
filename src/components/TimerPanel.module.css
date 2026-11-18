@@ -33,10 +33,21 @@
 
 .time {
   margin: 14px 0 10px;
-  font-size: clamp(56px, 20vw, 80px);
+  font-size: clamp(40px, 16vw, 72px);
   font-weight: 700;
   line-height: 1;
-  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.digit,
+.colon {
+  display: inline-block;
+  width: 0.8em;
+  text-align: center;
+}
+
+.colon {
+  width: 0.4em;
 }
 
 .dots {

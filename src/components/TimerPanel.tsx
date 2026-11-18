@@ -29,8 +29,14 @@ export function TimerPanel(props: Props) {
     <section className={styles.sign} aria-label="Timer">
       <div className={styles.paper}>
         <div className={styles.phase}>{props.phaseLabel}</div>
-        <div className={styles.time} role="timer">
-          {props.timeText}
+        {/* Each character sits in its own fixed-width box, so the clock
+            doesn't wobble when a narrow "1" replaces a wide "0". */}
+        <div className={styles.time} role="timer" aria-label={props.timeText}>
+          {[...props.timeText].map((char, i) => (
+            <span key={i} className={char === ':' ? styles.colon : styles.digit} aria-hidden="true">
+              {char}
+            </span>
+          ))}
         </div>
         <div
           className={styles.dots}

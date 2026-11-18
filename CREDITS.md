@@ -23,9 +23,13 @@ The end-of-phase chimes are synthesised live in the browser by `src/audio/chime.
 
 No third-party image files are used.
 
-## Fonts
+## Fonts — `public/assets/fonts/`
 
-None bundled (the app uses the system monospace font).
+| File | Source | Licence |
+|---|---|---|
+| `Silkscreen-Regular.ttf`, `Silkscreen-Bold.ttf` | Silkscreen by Jason Kottke, from the Google Fonts repository (https://github.com/google/fonts/tree/main/ofl/silkscreen) | SIL Open Font License 1.1 — full text in `public/assets/fonts/OFL.txt` |
+
+Typed text (notes, intentions) uses the system monospace font.
 
 ## Libraries
 

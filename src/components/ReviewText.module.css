@@ -7,6 +7,7 @@
 
 .review p {
   margin: 0;
+  font-family: var(--font-text);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -17,6 +18,7 @@
 
 .label {
   display: block;
+  font-family: var(--font);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;

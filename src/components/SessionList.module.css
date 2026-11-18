@@ -24,6 +24,7 @@
 }
 
 .intention {
+  font-family: var(--font-text);
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -64,6 +65,7 @@
 }
 
 .note {
+  font-family: var(--font-text);
   margin: 6px 0 0;
   font-size: 13px;
   color: var(--ink-soft);

@@ -30,8 +30,8 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 5px;
-  font-size: 11px;
+  padding: 5px 4px;
+  font-size: 10px;
   cursor: pointer;
   background: var(--paper);
   border: 2px solid var(--wood-dark);

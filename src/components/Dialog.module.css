@@ -41,6 +41,7 @@
 }
 
 .textarea {
+  font-family: var(--font-text);
   min-height: 84px;
   resize: vertical;
 }
@@ -101,6 +102,7 @@
 }
 
 .context {
+  font-family: var(--font-text);
   margin: 0;
   font-size: 14px;
   color: var(--ink-soft);
