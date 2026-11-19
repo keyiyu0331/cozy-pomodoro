@@ -25,7 +25,11 @@ export interface SeasonLook {
   roof: string;
   snow: boolean; // snow on roof, trees and hilltops
   fireflies: boolean; // shown at night
-  /** CSS variables for buttons and panels, so the UI matches the season. */
+  /**
+   * CSS variables for buttons and panels, so the UI matches the season.
+   * '--accent' colours the Start button and phase label during focus; the two
+   * break accents replace it during breaks.
+   */
   ui: Record<string, string>;
 }
 
@@ -141,6 +145,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
       '--ink': '#3a2a1b',
       '--ink-soft': '#7b6650',
       '--accent': '#c8507a',
+      '--accent-short-break': '#4d8a4a',
+      '--accent-long-break': '#2f6f8f',
     },
   },
   summer: {
@@ -160,13 +166,17 @@ export const SEASONS: Record<Season, SeasonLook> = {
     snow: false,
     fireflies: true,
     ui: {
-      '--wood': '#b98a4e',
-      '--wood-dark': '#5f4020',
-      '--wood-light': '#d8b074',
-      '--paper': '#fdf6d8',
-      '--ink': '#33281a',
-      '--ink-soft': '#75654c',
-      '--accent': '#c2691a',
+      // Summer: a green and blue-green board with a green Start button.
+      '--wood': '#5f9482',
+      '--wood-dark': '#2c564d',
+      '--wood-light': '#9cc4b0',
+      '--paper': '#f4f7e4',
+      '--ink': '#22332e',
+      '--ink-soft': '#5f7a70',
+      '--accent': '#2f8a48',
+      // Focus is green here, so the short break is warm to stay distinct.
+      '--accent-short-break': '#c2691a',
+      '--accent-long-break': '#2f6f8f',
     },
   },
   autumn: {
@@ -193,6 +203,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
       '--ink': '#38241a',
       '--ink-soft': '#7a5f4c',
       '--accent': '#b8432a',
+      '--accent-short-break': '#4d8a4a',
+      '--accent-long-break': '#2f6f8f',
     },
   },
   winter: {
@@ -219,6 +231,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
       '--ink': '#27304a',
       '--ink-soft': '#66708a',
       '--accent': '#3d76a6',
+      '--accent-short-break': '#4d8a4a',
+      '--accent-long-break': '#2f6f8f',
     },
   },
 };
