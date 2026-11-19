@@ -1,14 +1,13 @@
 .review {
   margin-top: 10px;
   padding: 8px 10px;
-  font-size: 17px;
+  font-size: 13px;
   border: 2px dashed var(--wood-light);
 }
 
 .review p {
   margin: 0;
   font-family: var(--font-text);
-  font-size: 13px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -20,7 +19,7 @@
 .label {
   display: block;
   font-family: var(--font);
-  font-size: 15px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-soft);

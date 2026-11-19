@@ -22,7 +22,7 @@
 .phase {
   display: inline-block;
   padding: 4px 10px;
-  font-size: 17px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -33,7 +33,7 @@
 
 .time {
   margin: 14px 0 10px;
-  font-size: clamp(56px, 24vw, 104px);
+  font-size: clamp(40px, 16vw, 72px);
   font-weight: 400;
   line-height: 1;
   white-space: nowrap;
@@ -42,12 +42,12 @@
 .digit,
 .colon {
   display: inline-block;
-  width: 0.5em; /* Ithaca's digits are narrow: its widest, the 4, is 0.44em */
+  width: 0.8em; /* the font's digits are up to 0.75em wide */
   text-align: center;
 }
 
 .colon {
-  width: 0.3em;
+  width: 0.4em;
 }
 
 .dots {
@@ -72,7 +72,7 @@
   display: inline-block;
   margin-top: 12px;
   padding: 4px 10px;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--ink-soft);
   border: 2px solid var(--wood-light);
@@ -109,7 +109,7 @@
 
 .hint {
   margin: 16px 0 0;
-  font-size: 15px;
+  font-size: 11px;
   text-align: center;
   /* Dark text, so it stays readable on light boards (spring) as well as dark ones. */
   color: var(--ink);

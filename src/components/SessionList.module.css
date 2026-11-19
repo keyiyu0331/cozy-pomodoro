@@ -13,19 +13,18 @@
   display: flex;
   align-items: baseline;
   gap: 10px;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .when,
 .minutes {
   flex: none;
-  font-size: 16px;
+  font-size: 12px;
   color: var(--ink-soft);
 }
 
 .intention {
   font-family: var(--font-text);
-  font-size: 14px;
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -36,7 +35,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .meta:not(:empty) {

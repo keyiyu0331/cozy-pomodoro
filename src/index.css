@@ -3,12 +3,12 @@
    the current season's palette from scene/themeConfig.ts. During breaks the
    accent colour changes so you can tell focus from break at a glance. */
 
-/* The pixel font: Ithaca by GGBotNet (SIL Open Font License — see CREDITS.md).
-   It has a single weight. font-display: swap shows text in the fallback font
-   until it has loaded. */
+/* The pixel font: Raster Forge by GGBotNet (public domain, CC0 — see
+   CREDITS.md). It has a single weight. font-display: swap shows text in the
+   fallback font until it has loaded. */
 @font-face {
-  font-family: 'Ithaca';
-  src: url('/assets/fonts/Ithaca.ttf') format('truetype');
+  font-family: 'Raster Forge';
+  src: url('/assets/fonts/RasterForge.ttf') format('truetype');
   font-weight: 400;
   font-display: swap;
 }
@@ -26,7 +26,7 @@
   --accent-long-break: #8a62ac;
   --accent-ink: #fff8ea;
   /* Pixel font for the interface... */
-  --font: 'Ithaca', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font: 'Raster Forge', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   /* ...and a plain one for things you type and read at length. */
   --font-text: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
@@ -69,7 +69,7 @@ body,
 
 body {
   font-family: var(--font);
-  /* Ithaca has no bold. Don't let the browser fake one by smearing the pixels. */
+  /* The font has no bold. Don't let the browser fake one by smearing the pixels. */
   font-synthesis: none;
   color: var(--ink);
   background: var(--bg);

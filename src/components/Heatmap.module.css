@@ -10,7 +10,7 @@
 
 .months {
   margin-bottom: 3px;
-  font-size: 14px;
+  font-size: 10px;
   color: var(--ink-soft);
 }
 
@@ -80,7 +80,7 @@
   justify-content: flex-end;
   gap: 4px;
   margin-top: 8px;
-  font-size: 15px;
+  font-size: 11px;
   color: var(--ink-soft);
 }
 

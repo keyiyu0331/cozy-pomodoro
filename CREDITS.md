@@ -27,7 +27,7 @@ No third-party image files are used.
 
 | File | Source | Licence |
 |---|---|---|
-| `Ithaca.ttf` | Ithaca by GGBotNet, from Fontspace (https://www.fontspace.com/ithaca-font-f144503) | SIL Open Font License 1.1 — full text in `public/assets/fonts/OFL-Ithaca.txt` |
+| `RasterForge.ttf` | Raster Forge by GGBotNet, from Fontspace (https://www.fontspace.com/raster-forge-font-f135159) | Public domain (CC0 1.0) — full text in `public/assets/fonts/CC0-RasterForge.txt` |
 
 Typed text (notes, intentions) uses the system monospace font.
 
