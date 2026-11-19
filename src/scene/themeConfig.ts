@@ -8,7 +8,7 @@ import type { Wind } from './wind';
 /** Everything that depends on the season. */
 export interface SeasonLook {
   label: string;
-  /** The little colour square shown next to the season's name in the Almanac. */
+  /** The little colour square shown next to the season's name in the Scene panel. */
   swatch: string;
   /** Weathers that feel right for this season (others are still allowed). */
   suggestedWeather: Weather[];

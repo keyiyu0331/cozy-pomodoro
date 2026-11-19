@@ -1,4 +1,4 @@
-// The "almanac": pick the season, weather and time of day. The buttons are
+// The Scene panel: pick the season, weather and time of day. The buttons are
 // built from the lists in themeConfig, so new entries there show up here by
 // themselves. Weathers that don't suit the season are dimmed but still work.
 
@@ -26,8 +26,8 @@ export function ThemePicker() {
   ];
 
   return (
-    <section className={styles.panel} aria-label="Almanac">
-      <h2 className={styles.heading}>Almanac</h2>
+    <section className={styles.panel} aria-label="Scene">
+      <h2 className={styles.heading}>Scene</h2>
 
       <div className={styles.row} role="group" aria-label="Season">
         {SEASON_ORDER.map((id) => (
