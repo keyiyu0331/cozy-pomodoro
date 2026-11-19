@@ -37,7 +37,7 @@ export function ThemePicker() {
             aria-pressed={theme.season === id}
             onClick={() => set({ season: id })}
           >
-            <span className={styles.swatch} style={{ background: SEASONS[id].ground }} />
+            <span className={styles.swatch} style={{ background: SEASONS[id].swatch }} />
             {SEASONS[id].label}
           </button>
         ))}

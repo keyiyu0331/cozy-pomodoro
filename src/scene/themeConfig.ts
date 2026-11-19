@@ -8,6 +8,8 @@ import type { Wind } from './wind';
 /** Everything that depends on the season. */
 export interface SeasonLook {
   label: string;
+  /** The little colour square shown next to the season's name in the Almanac. */
+  swatch: string;
   /** Weathers that feel right for this season (others are still allowed). */
   suggestedWeather: Weather[];
   hillFar: string;
@@ -117,6 +119,7 @@ export const TIME_ORDER: TimeOfDay[] = ['morning', 'afternoon', 'evening', 'nigh
 export const SEASONS: Record<Season, SeasonLook> = {
   spring: {
     label: 'Spring',
+    swatch: '#f4a6c6',
     suggestedWeather: ['clear', 'rain', 'windy', 'fog'],
     hillFar: '#9cc7a0',
     hillNear: '#7fb873',
@@ -142,6 +145,7 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   summer: {
     label: 'Summer',
+    swatch: '#6cc04f',
     suggestedWeather: ['clear', 'rain', 'storm', 'windy'],
     hillFar: '#7fb59a',
     hillNear: '#5ea85c',
@@ -167,6 +171,7 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   autumn: {
     label: 'Autumn',
+    swatch: '#c9a04a',
     suggestedWeather: ['clear', 'rain', 'storm', 'windy', 'fog'],
     hillFar: '#c9a56e',
     hillNear: '#c2853f',
@@ -192,6 +197,7 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   winter: {
     label: 'Winter',
+    swatch: '#f2f6fb',
     suggestedWeather: ['clear', 'snow', 'windy', 'fog'],
     hillFar: '#cfdcec',
     hillNear: '#e3ecf5',
