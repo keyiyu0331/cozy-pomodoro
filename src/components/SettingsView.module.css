@@ -87,20 +87,16 @@
   margin-bottom: 8px;
 }
 
-/* The tag's colour square: just the colour, no frame. The ::-webkit and
-   ::-moz rules remove the browser's own inner border and padding. */
+/* The tag's colour square, in its brown frame. The ::-webkit and ::-moz rules
+   remove the thin grey line browsers draw around the colour itself. */
 .color {
   flex: none;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  background: none;
-  border: none;
+  width: 36px;
+  height: 34px;
+  padding: 2px;
+  background: #fff;
+  border: 3px solid var(--wood-dark);
   cursor: pointer;
-}
-
-.color::-webkit-color-swatch-wrapper {
-  padding: 0;
 }
 
 .color::-webkit-color-swatch {
