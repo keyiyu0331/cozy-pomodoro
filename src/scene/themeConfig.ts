@@ -28,7 +28,8 @@ export interface SeasonLook {
   /**
    * CSS variables for buttons and panels, so the UI matches the season.
    * '--accent' colours the Start button and phase label during focus; the two
-   * break accents replace it during breaks.
+   * break accents replace it during breaks. They are neighbours of the focus
+   * colour on the colour wheel, at a similar depth, so the three look like a set.
    */
   ui: Record<string, string>;
 }
@@ -146,8 +147,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
       '--ink': '#3a2630',
       '--ink-soft': '#7f6470',
       '--accent': '#c8507a',
-      '--accent-short-break': '#4d8a4a',
-      '--accent-long-break': '#2f6f8f',
+      '--accent-short-break': '#b0689e',
+      '--accent-long-break': '#8a62ac',
     },
   },
   summer: {
@@ -175,9 +176,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
       '--ink': '#22332e',
       '--ink-soft': '#5f7a70',
       '--accent': '#2f8a48',
-      // Focus is green here, so the short break is warm to stay distinct.
-      '--accent-short-break': '#c2691a',
-      '--accent-long-break': '#2f6f8f',
+      '--accent-short-break': '#2f8a80',
+      '--accent-long-break': '#2f7396',
     },
   },
   autumn: {
@@ -204,8 +204,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
       '--ink': '#38241a',
       '--ink-soft': '#7a5f4c',
       '--accent': '#b8432a',
-      '--accent-short-break': '#4d8a4a',
-      '--accent-long-break': '#2f6f8f',
+      '--accent-short-break': '#c47a22',
+      '--accent-long-break': '#8c6b28',
     },
   },
   winter: {
@@ -232,8 +232,8 @@ export const SEASONS: Record<Season, SeasonLook> = {
       '--ink': '#27304a',
       '--ink-soft': '#66708a',
       '--accent': '#3d76a6',
-      '--accent-short-break': '#4d8a4a',
-      '--accent-long-break': '#2f6f8f',
+      '--accent-short-break': '#3d8f9a',
+      '--accent-long-break': '#5a66a8',
     },
   },
 };
