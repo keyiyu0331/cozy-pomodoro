@@ -6,7 +6,6 @@
 
 import { SCENE_H, SCENE_W, rect, type Layer } from '../draw';
 import { drawFog } from './fog';
-import { drawLeaves } from './leaves';
 import { drawRain } from './rain';
 import { drawSnow } from './snow';
 
@@ -19,7 +18,6 @@ interface ParticleEffect {
 export const PARTICLES: Record<string, ParticleEffect> = {
   rain: { draw: drawRain, showWhenStill: false },
   snow: { draw: drawSnow, showWhenStill: false },
-  leaves: { draw: drawLeaves, showWhenStill: false },
   fog: { draw: drawFog, showWhenStill: true },
 };
 

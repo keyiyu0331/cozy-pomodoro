@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Ctx } from './draw';
 import { mix, rand } from './draw';
 import { drawScene } from './drawScene';
@@ -23,6 +23,11 @@ function fakeContext(): { ctx: Ctx; rects: () => number } {
   }) as unknown as Ctx;
   return { ctx, rects: () => count };
 }
+
+// The leafy trees are painted onto small hidden canvases, which only exist in
+// a browser. Give the tests stand-ins for the two browser features they use.
+vi.stubGlobal('document', { createElement: () => ({ width: 0, height: 0, getContext: () => fakeContext().ctx }) });
+vi.stubGlobal('Image', class {});
 
 describe('drawScene', () => {
   it('draws every season × weather × time of day without errors', () => {

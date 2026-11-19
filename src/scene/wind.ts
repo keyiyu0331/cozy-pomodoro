@@ -86,3 +86,21 @@ export function streakScale(strength: number): number {
 export function leavesPerSecond(strength: number): number {
   return strength <= 0 ? 0 : 2.5 * strength ** 2;
 }
+
+// ---------- rain and grass ----------
+
+/** How far rain drifts sideways for each pixel it falls: nearly straight in light wind. */
+export function rainSlant(strength: number): number {
+  return 0.1 + 0.5 * strength;
+}
+
+/**
+ * How many pixels a blade of grass leans right now: 0, or 1 pixel downwind.
+ * Each blade has its own rhythm (`blade` is its number). The stronger the
+ * wind, the more of the time it spends leaning and the faster it flicks.
+ */
+export function grassLean(t: number, blade: number, wind: Wind): number {
+  if (wind.strength <= 0) return 0;
+  const wave = Math.sin(t * (1.5 + 3 * wind.strength) + blade);
+  return wave > 0.9 - 1.2 * wind.strength ? wind.direction : 0;
+}

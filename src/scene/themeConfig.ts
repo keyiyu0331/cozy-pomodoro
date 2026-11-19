@@ -3,12 +3,11 @@
 // To restyle a season, edit its entry — no drawing code needs to change.
 
 import type { Season, TimeOfDay, Weather } from '../types';
+import type { Wind } from './wind';
 
 /** Everything that depends on the season. */
 export interface SeasonLook {
   label: string;
-  /** Colours of what blows past in windy weather (petals, leaves, snow dust). */
-  windDebris: string[];
   /** Weathers that feel right for this season (others are still allowed). */
   suggestedWeather: Weather[];
   hillFar: string;
@@ -18,9 +17,6 @@ export interface SeasonLook {
   path: string;
   blade: string; // grass tufts
   trunk: string;
-  /** Canopy colours [main, highlight, shade]. Empty = bare branches. */
-  leaves: string[];
-  blossom: string | null; // dots on the canopy
   /** Small dots on the ground: flowers, fallen leaves... Empty = none. */
   groundDots: string[];
   pine: string;
@@ -70,11 +66,11 @@ export const WEATHERS: Record<Weather, WeatherLook> = {
   rain: { label: 'Rain', particles: ['rain'], intensity: 1, overcast: 'rgba(70, 80, 100, 0.35)', lightning: false, critters: false, wind: 0.35 },
   storm: { label: 'Storm', particles: ['rain'], intensity: 1.8, overcast: 'rgba(38, 42, 68, 0.55)', lightning: true, critters: false, wind: 1 },
   snow: { label: 'Snow', particles: ['snow'], intensity: 1, overcast: 'rgba(200, 210, 225, 0.30)', lightning: false, critters: false, wind: 0.2 },
-  windy: { label: 'Windy', particles: ['leaves'], intensity: 1, overcast: null, lightning: false, critters: true, wind: 0.7 },
+  windy: { label: 'Windy', particles: [], intensity: 1, overcast: null, lightning: false, critters: true, wind: 0.7 },
   fog: { label: 'Fog', particles: ['fog'], intensity: 1, overcast: 'rgba(214, 218, 222, 0.28)', lightning: false, critters: true, wind: 0 },
 };
 
-/** Colours of the wind-lab tree for one season. */
+/** Colours of the leafy trees for one season. */
 export interface TreeLook {
   outline: string;
   /** Canopy greens, darkest first — exactly 5. */
@@ -126,7 +122,6 @@ export const TIME_ORDER: TimeOfDay[] = ['morning', 'afternoon', 'evening', 'nigh
 export const SEASONS: Record<Season, SeasonLook> = {
   spring: {
     label: 'Spring',
-    windDebris: ['#f7b6d2', '#ffffff'],
     suggestedWeather: ['clear', 'rain', 'windy', 'fog'],
     hillFar: '#9cc7a0',
     hillNear: '#7fb873',
@@ -135,8 +130,6 @@ export const SEASONS: Record<Season, SeasonLook> = {
     path: '#d9b98a',
     blade: '#5fa24a',
     trunk: '#7a5230',
-    leaves: ['#6dbb5a', '#8fd46e', '#4f9c48'],
-    blossom: '#f7b6d2',
     groundDots: ['#f7b6d2', '#ffffff', '#ffe27a'],
     pine: '#3f8a55',
     roof: '#b5533c',
@@ -154,7 +147,6 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   summer: {
     label: 'Summer',
-    windDebris: ['#57b554', '#8fd46e'],
     suggestedWeather: ['clear', 'rain', 'storm', 'windy'],
     hillFar: '#7fb59a',
     hillNear: '#5ea85c',
@@ -163,8 +155,6 @@ export const SEASONS: Record<Season, SeasonLook> = {
     path: '#d8b27c',
     blade: '#3f8a34',
     trunk: '#6f4a2a',
-    leaves: ['#3f9a46', '#57b554', '#2f7d3c'],
-    blossom: null,
     groundDots: ['#ffe27a', '#ff9d5c'],
     pine: '#2f7a4a',
     roof: '#b5533c',
@@ -182,7 +172,6 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   autumn: {
     label: 'Autumn',
-    windDebris: ['#d9642b', '#f0a030', '#b8432a'],
     suggestedWeather: ['clear', 'rain', 'storm', 'windy', 'fog'],
     hillFar: '#c9a56e',
     hillNear: '#c2853f',
@@ -191,8 +180,6 @@ export const SEASONS: Record<Season, SeasonLook> = {
     path: '#b98c5e',
     blade: '#9a7430',
     trunk: '#6a4426',
-    leaves: ['#d9642b', '#f0a030', '#b8432a'],
-    blossom: null,
     groundDots: ['#d9642b', '#f0a030', '#b8432a'],
     pine: '#4a7a4a',
     roof: '#9c4632',
@@ -210,7 +197,6 @@ export const SEASONS: Record<Season, SeasonLook> = {
   },
   winter: {
     label: 'Winter',
-    windDebris: ['#ffffff', '#dfe8f2'],
     suggestedWeather: ['clear', 'snow', 'windy', 'fog'],
     hillFar: '#cfdcec',
     hillNear: '#e3ecf5',
@@ -219,8 +205,6 @@ export const SEASONS: Record<Season, SeasonLook> = {
     path: '#cfc8be',
     blade: '#b9c6d6',
     trunk: '#5e4a3e',
-    leaves: [],
-    blossom: null,
     groundDots: [],
     pine: '#3d6e5a',
     roof: '#8f4a3c',
@@ -296,14 +280,20 @@ export interface SceneTheme {
   sky: SkyLook;
   /** false when reduced motion is on: moving particles and flashes are skipped. */
   animated: boolean;
+  /** How hard, and which way, the wind is blowing right now (see wind.ts). */
+  wind: Wind;
 }
 
-export function getSceneTheme(state: SceneState, animated: boolean): SceneTheme {
+/**
+ * @param wind the current (easing) wind; left out, it is the weather's own steady strength
+ */
+export function getSceneTheme(state: SceneState, animated: boolean, wind?: Wind): SceneTheme {
   return {
     state,
     season: SEASONS[state.season],
     weather: WEATHERS[state.weather],
     sky: SKIES[state.timeOfDay],
     animated,
+    wind: wind ?? { strength: WEATHERS[state.weather].wind, direction: 1 },
   };
 }

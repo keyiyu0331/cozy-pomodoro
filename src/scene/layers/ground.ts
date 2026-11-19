@@ -1,7 +1,8 @@
-// Front layer: the ground, a dirt path from the cottage door, swaying grass
+// Front layer: the ground, a dirt path from the cottage door, wind-blown grass
 // tufts, and seasonal dots (spring flowers, fallen autumn leaves).
 
 import { COTTAGE_X, GROUND_Y, SCENE_H, SCENE_W, rand, rect, type Layer } from '../draw';
+import { grassLean } from '../wind';
 
 const GROUND_H = SCENE_H - GROUND_Y;
 const PATH_TOP = GROUND_Y + 3; // the cottage's doorstep
@@ -18,7 +19,7 @@ function onPath(x: number, y: number): boolean {
   return Math.abs(x - centre) < width / 2 + 2;
 }
 
-export const drawGround: Layer = (ctx, { season }, t) => {
+export const drawGround: Layer = (ctx, { season, wind }, t) => {
   rect(ctx, 0, GROUND_Y, SCENE_W, GROUND_H, season.ground);
 
   // Texture speckles.
@@ -32,13 +33,12 @@ export const drawGround: Layer = (ctx, { season }, t) => {
     rect(ctx, centre - width / 2, y, width, 1, season.path);
   }
 
-  // Grass tufts: two little blades, the taller one swaying.
+  // Grass tufts: two little blades; the taller one flicks downwind.
   for (let i = 0; i < 80; i++) {
     const x = Math.round(rand(i + 600) * SCENE_W);
     const y = Math.round(GROUND_Y + 4 + rand(i + 650) * (GROUND_H - 6));
     if (onPath(x, y)) continue;
-    const sway = Math.round(Math.sin(t * 2 + i) * 0.5);
-    rect(ctx, x + sway, y - 2, 1, 2, season.blade);
+    rect(ctx, x + grassLean(t, i, wind), y - 2, 1, 2, season.blade);
     rect(ctx, x + 1, y - 1, 1, 1, season.blade);
   }
 

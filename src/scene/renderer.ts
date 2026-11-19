@@ -9,6 +9,7 @@
 import { SCENE_H, SCENE_W, type Ctx } from './draw';
 import { drawScene } from './drawScene';
 import type { SceneState } from './themeConfig';
+import { createWind, windForWeather } from './wind';
 
 const FADE_MS = 1000;
 const FRAME_MS = 66; // ~15 frames a second is plenty for pixel art, and saves battery
@@ -38,6 +39,9 @@ export function createRenderer(canvas: HTMLCanvasElement): Renderer {
   const incoming = makeBuffer(); // the new scene, drawn fresh each frame of a fade
 
   let state: SceneState | null = null;
+  // The wind eases toward each new weather's strength instead of jumping.
+  let wind: ReturnType<typeof createWind> | null = null;
+  let lastFrame = 0;
   let animated = true;
   let fadeStart: number | null = null;
   let needsDraw = true;
@@ -46,7 +50,10 @@ export function createRenderer(canvas: HTMLCanvasElement): Renderer {
 
   function frame(now: number): void {
     frameId = requestAnimationFrame(frame);
-    if (!state) return;
+    const sinceLastFrame = lastFrame ? Math.min(0.5, (now - lastFrame) / 1000) : 0;
+    lastFrame = now;
+    wind?.update(sinceLastFrame);
+    if (!state || !wind) return;
 
     const fading = fadeStart !== null;
     const due = animated && now - lastDraw >= FRAME_MS;
@@ -57,11 +64,11 @@ export function createRenderer(canvas: HTMLCanvasElement): Renderer {
     const t = animated ? now / 1000 : 0;
 
     if (fadeStart === null) {
-      drawScene(ctx, state, t, animated);
+      drawScene(ctx, state, t, animated, wind);
       return;
     }
     const progress = Math.min(1, (now - fadeStart) / FADE_MS);
-    drawScene(incoming.ctx, state, t, animated);
+    drawScene(incoming.ctx, state, t, animated, wind);
     ctx.globalAlpha = 1;
     ctx.drawImage(photo.canvas, 0, 0);
     ctx.globalAlpha = progress;
@@ -80,6 +87,8 @@ export function createRenderer(canvas: HTMLCanvasElement): Renderer {
         state.weather === next.weather &&
         state.timeOfDay === next.timeOfDay;
       if (same) return;
+      if (wind) wind.setTarget(windForWeather(next.weather));
+      else wind = createWind(windForWeather(next.weather)); // first scene: no easing needed
       if (state) {
         photo.ctx.drawImage(canvas, 0, 0); // works mid-fade too: we photograph the blend
         fadeStart = performance.now();

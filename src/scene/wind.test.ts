@@ -8,6 +8,8 @@ import { drawStreaks } from './weather/streaks';
 import {
   createWind,
   easeToward,
+  grassLean,
+  rainSlant,
   leavesPerSecond,
   rustleFps,
   streaksPerSecond,
@@ -72,6 +74,31 @@ describe('wind', () => {
     expect(leavesPerSecond(windForWeather('clear'))).toBeLessThan(0.1); // rare
     expect(leavesPerSecond(windForWeather('windy'))).toBeGreaterThan(1); // frequent
     expect([rustleFps(0.7), rustleFps(1)]).toEqual([6, 8]);
+  });
+});
+
+describe('rain and grass', () => {
+  it('slants rain more in stronger wind', () => {
+    expect(rainSlant(0)).toBeLessThan(rainSlant(0.35));
+    expect(rainSlant(0.35)).toBeLessThan(rainSlant(1));
+  });
+
+  it('keeps grass still in dead calm, and leans it only 0 or 1 pixel downwind otherwise', () => {
+    const leaning = (strength: number, direction: 1 | -1 = 1) => {
+      let count = 0;
+      for (let t = 0; t < 30; t += 0.1) {
+        for (let blade = 0; blade < 10; blade++) {
+          const lean = grassLean(t, blade, { strength, direction });
+          expect([0, direction]).toContain(lean);
+          if (lean !== 0) count++;
+        }
+      }
+      return count;
+    };
+    expect(leaning(0)).toBe(0);
+    expect(leaning(0.15)).toBeGreaterThan(0);
+    expect(leaning(0.7)).toBeGreaterThan(leaning(0.15));
+    expect(leaning(0.7, -1)).toBeGreaterThan(0); // leans left when the wind blows left
   });
 });
 
