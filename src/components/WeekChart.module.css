@@ -36,6 +36,8 @@
 
 .segment {
   min-height: 2px;
+  /* A faint edge, so pale tag colours still stand out from the paper. */
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.22);
 }
 
 .day,

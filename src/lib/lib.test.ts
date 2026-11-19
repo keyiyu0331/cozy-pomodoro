@@ -18,6 +18,7 @@ import {
   weekStart,
 } from './stats';
 import { buildExport, parseImport } from './storage';
+import { TAG_PALETTE, nextTagColor, recolorOldDefaults } from './tagColors';
 import { timeOfDayAt } from './timeOfDay';
 
 const MIN = 60_000;
@@ -301,5 +302,27 @@ describe('isReviewDue', () => {
     expect(isReviewDue('21:00', evening, true, null)).toBe(false);
     expect(isReviewDue('21:00', evening, false, today)).toBe(false);
     expect(isReviewDue('21:00', evening, false, '2026-03-09')).toBe(true);
+  });
+});
+
+describe('tag colours', () => {
+  it('hands out the palette in order, then starts again', () => {
+    expect([0, 1, 2, 3, 4, 5].map(nextTagColor)).toEqual([...TAG_PALETTE, TAG_PALETTE[0], TAG_PALETTE[1]]);
+  });
+
+  it('recolours saved starter tags, but not colours you chose or tags you made', () => {
+    const saved = [
+      { id: 'coursework', name: 'Uni', color: '#3d76a6' }, // old default, renamed
+      { id: 'job-prep', name: 'Job prep', color: '#123456' }, // you changed the colour
+      { id: 'side-project', name: 'Side project', color: '#4D8A4A' }, // old default, upper case
+      { id: 'my-own', name: 'Reading', color: '#3d76a6' }, // your own tag
+    ];
+    expect(recolorOldDefaults(saved).map((t) => t.color)).toEqual([
+      TAG_PALETTE[0],
+      '#123456',
+      TAG_PALETTE[2],
+      '#3d76a6',
+    ]);
+    expect(recolorOldDefaults(saved)[0].name).toBe('Uni');
   });
 });

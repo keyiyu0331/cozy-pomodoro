@@ -2,12 +2,13 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { TAG_PALETTE, nextTagColor, recolorOldDefaults } from '../lib/tagColors';
 import type { Tag } from '../types';
 
 export const DEFAULT_TAGS: Tag[] = [
-  { id: 'coursework', name: 'Coursework', color: '#3d76a6' },
-  { id: 'job-prep', name: 'Job prep', color: '#d2603a' },
-  { id: 'side-project', name: 'Side project', color: '#4d8a4a' },
+  { id: 'coursework', name: 'Coursework', color: TAG_PALETTE[0] },
+  { id: 'job-prep', name: 'Job prep', color: TAG_PALETTE[1] },
+  { id: 'side-project', name: 'Side project', color: TAG_PALETTE[2] },
 ];
 
 interface TagStore {
@@ -24,13 +25,22 @@ export const useTagStore = create<TagStore>()(
       tags: DEFAULT_TAGS,
       addTag: () =>
         set((s) => ({
-          tags: [...s.tags, { id: crypto.randomUUID(), name: 'New tag', color: '#8a6bb0' }],
+          tags: [...s.tags, { id: crypto.randomUUID(), name: 'New tag', color: nextTagColor(s.tags.length) }],
         })),
       updateTag: (id, changes) =>
         set((s) => ({ tags: s.tags.map((t) => (t.id === id ? { ...t, ...changes } : t)) })),
       removeTag: (id) => set((s) => ({ tags: s.tags.filter((t) => t.id !== id) })),
       replaceTags: (tags) => set({ tags }),
     }),
-    { name: 'cozy-pomodoro-tags', version: 1 },
+    {
+      name: 'cozy-pomodoro-tags',
+      version: 2,
+      // Version 1 → 2: the starter tags changed to the new colour palette.
+      migrate: (saved, version) => {
+        const state = saved as { tags?: Tag[] };
+        if (version < 2 && Array.isArray(state.tags)) state.tags = recolorOldDefaults(state.tags);
+        return state as TagStore;
+      },
+    },
   ),
 );
