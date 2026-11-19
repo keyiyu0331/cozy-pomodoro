@@ -25,6 +25,7 @@
 
 .summary strong {
   font-size: 22px;
+  font-weight: 400; /* numbers: the pixel font's bold "4" is unclear */
 }
 
 .empty {
