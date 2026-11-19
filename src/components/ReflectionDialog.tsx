@@ -1,14 +1,15 @@
 // "How did it go?" — shown when a focus session finishes. The session is
-// already saved by then; this dialog only adds a rating and note to it.
+// already saved by then; this dialog only adds a mood (Distracted / Neutral /
+// Focused) and a note to it.
 
 import { useState, type FormEvent } from 'react';
+import { MOODS } from '../lib/moods';
 import { useHistoryStore } from '../state/historyStore';
 import { useUiStore } from '../state/uiStore';
 import type { SessionRecord } from '../types';
 import { Dialog } from './Dialog';
 import styles from './Dialog.module.css';
-
-const RATINGS = [1, 2, 3] as const;
+import { MoodFace } from './MoodFace';
 
 export function ReflectionDialog({ sessionId }: { sessionId: string }) {
   const session = useHistoryStore((s) => s.sessions.find((r) => r.id === sessionId));
@@ -29,18 +30,18 @@ export function ReflectionDialog({ sessionId }: { sessionId: string }) {
       <form onSubmit={handleSubmit}>
         {session?.intention && <p className={styles.context}>“{session.intention}”</p>}
 
-        <span className={styles.label}>Rating</span>
-        <div className={styles.hearts}>
-          {RATINGS.map((n) => (
+        <span className={styles.label}>How focused were you?</span>
+        <div className={styles.moods}>
+          {MOODS.map((mood) => (
             <button
-              key={n}
+              key={mood.rating}
               type="button"
-              className={rating !== undefined && n <= rating ? styles.heartOn : styles.heart}
-              aria-label={`${n} of 3 hearts`}
-              aria-pressed={rating === n}
-              onClick={() => setRating(rating === n ? undefined : n)}
+              className={rating === mood.rating ? styles.moodOn : styles.mood}
+              aria-pressed={rating === mood.rating}
+              onClick={() => setRating(rating === mood.rating ? undefined : mood.rating)}
             >
-              ♥
+              <MoodFace rating={mood.rating} size={36} />
+              {mood.label}
             </button>
           ))}
         </div>

@@ -1,9 +1,11 @@
-// A list of sessions with their intention, tag, rating and note.
+// A list of sessions with their intention, tag, mood and note.
 // Used by the Today panel and by the day detail in History.
 
+import { moodFor } from '../lib/moods';
 import { formatMinutes } from '../lib/stats';
 import { useTagStore } from '../state/tagStore';
 import type { SessionRecord } from '../types';
+import { MoodFace } from './MoodFace';
 import styles from './SessionList.module.css';
 
 function clockTime(timestamp: number): string {
@@ -32,8 +34,9 @@ export function SessionList({ sessions }: { sessions: SessionRecord[] }) {
                 </span>
               )}
               {s.rating && (
-                <span className={styles.rating} aria-label={`${s.rating} of 3 hearts`}>
-                  {'♥'.repeat(s.rating)}
+                <span className={styles.tag}>
+                  <MoodFace rating={s.rating} size={12} />
+                  {moodFor(s.rating).label}
                 </span>
               )}
               {!s.completed && <span className={styles.stopped}>stopped early</span>}

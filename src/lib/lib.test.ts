@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ActiveSession, SessionRecord, Settings } from '../types';
+import { FACE_COLORS, MOODS, moodFor } from './moods';
 import { pruneHistory } from './retention';
 import { buildSessionRecord } from './sessionRecord';
 import { isReviewDue } from './review';
@@ -325,5 +326,22 @@ describe('tag colours', () => {
       '#3d76a6',
     ]);
     expect(recolorOldDefaults(saved)[0].name).toBe('Uni');
+  });
+});
+
+describe('moods', () => {
+  it('maps ratings 1, 2, 3 to Distracted, Neutral, Focused', () => {
+    expect(MOODS.map((m) => [m.rating, m.label])).toEqual([[1, 'Distracted'], [2, 'Neutral'], [3, 'Focused']]);
+    expect(moodFor(3).label).toBe('Focused');
+  });
+
+  it('draws every face as a 12×12 picture using only known colours', () => {
+    for (const mood of MOODS) {
+      expect(mood.face.length).toBe(12);
+      for (const row of mood.face) {
+        expect(row.length).toBe(12);
+        for (const pixel of row) if (pixel !== '.') expect(FACE_COLORS[pixel]).toBeDefined();
+      }
+    }
   });
 });

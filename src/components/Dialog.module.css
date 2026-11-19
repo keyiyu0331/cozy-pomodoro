@@ -80,25 +80,33 @@
   border: 1px solid rgb(0 0 0 / 0.35);
 }
 
-.hearts {
-  display: flex;
+/* The three mood choices: a pixel face above its name. */
+.moods {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 
-.heart,
-.heartOn {
-  width: 48px;
-  height: 44px;
-  font-size: 24px;
-  line-height: 1;
+.mood,
+.moodOn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 4px 8px;
+  font-size: 11px;
   cursor: pointer;
-  color: #cdbfa6;
   background: #fff;
-  border: 3px solid var(--wood-dark);
+  border: 3px solid var(--wood-light);
 }
 
-.heartOn {
-  color: var(--accent);
+.mood:hover {
+  border-color: var(--wood-dark);
+}
+
+.moodOn {
+  background: var(--wood-light);
+  border-color: var(--wood-dark);
 }
 
 .context {
