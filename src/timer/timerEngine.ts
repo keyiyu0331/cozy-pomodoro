@@ -17,6 +17,8 @@ export interface TimerState {
   endTimestamp: number | null;
   /** Time left, frozen at the moment of pausing. Only set while paused. */
   pausedRemainingMs: number | null;
+  /** Epoch ms when the current phase was first started. null until it starts. */
+  phaseStartedAt: number | null;
   /** How many focus sessions have ended so far (decides long breaks). */
   focusCount: number;
 }
@@ -26,6 +28,7 @@ export const initialTimerState: TimerState = {
   status: 'idle',
   endTimestamp: null,
   pausedRemainingMs: null,
+  phaseStartedAt: null,
   focusCount: 0,
 };
 
@@ -66,6 +69,8 @@ export function start(state: TimerState, fullMs: number, now: number): TimerStat
     status: 'running',
     endTimestamp: now + remainingMs(state, fullMs, now),
     pausedRemainingMs: null,
+    // A fresh start sets the start time; resuming from a pause keeps it.
+    phaseStartedAt: state.status === 'idle' ? now : state.phaseStartedAt,
   };
 }
 
@@ -81,7 +86,7 @@ export function pause(state: TimerState, now: number): TimerState {
 
 /** Back to the full length of the current phase, stopped. */
 export function reset(state: TimerState): TimerState {
-  return { ...state, status: 'idle', endTimestamp: null, pausedRemainingMs: null };
+  return { ...state, status: 'idle', endTimestamp: null, pausedRemainingMs: null, phaseStartedAt: null };
 }
 
 /**
@@ -102,8 +107,22 @@ export function advance(state: TimerState, longBreakEvery: number): TimerState {
     status: 'idle',
     endTimestamp: null,
     pausedRemainingMs: null,
+    phaseStartedAt: null,
     focusCount,
   };
+}
+
+/**
+ * The clock times the current phase runs from and to, e.g. 11:45 → 12:10.
+ *  - not started yet: from now until now + the full length ("if you start now")
+ *  - running:         from when it started until its end time
+ *  - paused:          from when it started until now + the time left (the end
+ *                     keeps sliding later for as long as you stay paused)
+ */
+export function sessionRange(state: TimerState, fullMs: number, now: number): { start: number; end: number } {
+  const end = now + remainingMs(state, fullMs, now);
+  if (state.status === 'idle') return { start: now, end };
+  return { start: state.phaseStartedAt ?? now, end: state.endTimestamp ?? end };
 }
 
 /** 1_500_000 → "25:00". Rounds up so "00:00" only shows when time is truly up. */

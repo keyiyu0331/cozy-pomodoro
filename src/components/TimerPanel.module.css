@@ -67,6 +67,17 @@
   background: var(--accent);
 }
 
+/* The "11:45 AM → 12:10 PM" pill under the clock. */
+.range {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  border: 2px solid var(--wood-light);
+}
+
 .controls {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;

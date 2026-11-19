@@ -9,6 +9,7 @@ interface Props {
   phaseLabel: string;
   status: TimerStatus;
   timeText: string; // already formatted, e.g. "24:59"
+  rangeText: string; // clock times from → to, e.g. "11:45 AM → 12:10 PM"
   cycleDone: number; // focus sessions finished in this cycle
   cycleLength: number; // sessions per cycle (long break after the last)
   onToggle: () => void;
@@ -45,6 +46,9 @@ export function TimerPanel(props: Props) {
           {dots.map((filled, i) => (
             <span key={i} className={filled ? styles.dotFilled : styles.dot} />
           ))}
+        </div>
+        <div className={styles.range} aria-label={`Runs from ${props.rangeText.replace('→', 'to')}`}>
+          {props.rangeText}
         </div>
       </div>
 

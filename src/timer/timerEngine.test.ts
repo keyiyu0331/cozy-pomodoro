@@ -9,6 +9,7 @@ import {
   phaseDurationMs,
   remainingMs,
   reset,
+  sessionRange,
   start,
   type TimerState,
 } from './timerEngine';
@@ -152,5 +153,45 @@ describe('formatTime', () => {
   it('handles more than an hour and negatives', () => {
     expect(formatTime(90 * MIN)).toBe('90:00');
     expect(formatTime(-500)).toBe('00:00');
+  });
+});
+
+describe('phaseStartedAt', () => {
+  it('is set on a fresh start and kept through pause and resume', () => {
+    const running = start(initialTimerState, FULL, T0);
+    expect(running.phaseStartedAt).toBe(T0);
+    const paused = pause(running, T0 + 5 * MIN);
+    expect(paused.phaseStartedAt).toBe(T0);
+    expect(start(paused, FULL, T0 + 9 * MIN).phaseStartedAt).toBe(T0);
+  });
+
+  it('is cleared by reset and when moving to the next phase', () => {
+    const running = start(initialTimerState, FULL, T0);
+    expect(reset(running).phaseStartedAt).toBeNull();
+    expect(advance(running, 4).phaseStartedAt).toBeNull();
+  });
+});
+
+describe('sessionRange', () => {
+  it('before starting: from now until now + the full length', () => {
+    expect(sessionRange(initialTimerState, FULL, T0)).toEqual({ start: T0, end: T0 + FULL });
+    expect(sessionRange(initialTimerState, FULL, T0 + MIN)).toEqual({ start: T0 + MIN, end: T0 + MIN + FULL });
+  });
+
+  it('while running: fixed, from the start time to the end time', () => {
+    const running = start(initialTimerState, FULL, T0);
+    expect(sessionRange(running, FULL, T0 + 10 * MIN)).toEqual({ start: T0, end: T0 + FULL });
+  });
+
+  it('while paused: the end slides later, the start stays', () => {
+    const paused = pause(start(initialTimerState, FULL, T0), T0 + 10 * MIN); // 15 min left
+    expect(sessionRange(paused, FULL, T0 + 10 * MIN)).toEqual({ start: T0, end: T0 + FULL });
+    expect(sessionRange(paused, FULL, T0 + 20 * MIN)).toEqual({ start: T0, end: T0 + 35 * MIN });
+  });
+
+  it('after resuming: ends later by however long the pause was', () => {
+    const paused = pause(start(initialTimerState, FULL, T0), T0 + 10 * MIN);
+    const resumed = start(paused, FULL, T0 + 14 * MIN); // paused for 4 minutes
+    expect(sessionRange(resumed, FULL, T0 + 15 * MIN)).toEqual({ start: T0, end: T0 + FULL + 4 * MIN });
   });
 });

@@ -23,7 +23,7 @@ import { useSettingsStore } from './state/settingsStore';
 import { useTimerStore } from './state/timerStore';
 import { useUiStore } from './state/uiStore';
 import { handlePhaseEnd, resetTimer, skipTimer, toggleTimer } from './timer/timerActions';
-import { formatTime, isFinished, phaseDurationMs, remainingMs } from './timer/timerEngine';
+import { formatTime, isFinished, phaseDurationMs, remainingMs, sessionRange } from './timer/timerEngine';
 import { useShortcuts } from './timer/useShortcuts';
 import { useTicker } from './timer/useTicker';
 import { PHASE_LABELS } from './types';
@@ -62,9 +62,22 @@ export default function App() {
     if (isFinished(useTimerStore.getState(), Date.now())) handlePhaseEnd();
   }, [tick]);
 
+  // While the timer isn't running nothing else redraws the screen, so nudge
+  // it every 10 seconds to keep the "from → to" clock times up to date.
+  const [, setClockTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setClockTick((n) => n + 1), 10_000);
+    return () => clearInterval(id);
+  }, []);
+
   const fullMs = phaseDurationMs(timer.phase, settings);
   const timeText = formatTime(remainingMs(timer, fullMs, Date.now()));
   const phaseLabel = PHASE_LABELS[timer.phase];
+
+  // The clock times this phase runs from and to, e.g. "11:45 AM → 12:10 PM".
+  const range = sessionRange(timer, fullMs, Date.now());
+  const clockTime = (ms: number) => new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const rangeText = `${clockTime(range.start)} → ${clockTime(range.end)}`;
 
   useEffect(() => {
     document.title = `${timeText} · ${phaseLabel}`;
@@ -86,6 +99,7 @@ export default function App() {
         phaseLabel={phaseLabel}
         status={timer.status}
         timeText={timeText}
+        rangeText={rangeText}
         cycleDone={cycleDone}
         cycleLength={every}
         onToggle={toggleTimer}
