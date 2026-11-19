@@ -1,14 +1,25 @@
 // Entry point: finds <div id="root"> in index.html and mounts the React app in it.
 
 import './lib/oldNames'; // must stay first: moves data saved under the app's old name
-import { StrictMode } from 'react';
+import { StrictMode, Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 
+// The address /wind-lab shows the wind test bench instead of the app.
+// `lazy` means its code is only downloaded if you actually go there.
+const WindLab = lazy(() => import('./lab/WindLab'));
+const onWindLab = window.location.pathname.replace(/\/+$/, '').endsWith('/wind-lab');
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    {onWindLab ? (
+      <Suspense fallback={null}>
+        <WindLab />
+      </Suspense>
+    ) : (
+      <App />
+    )}
   </StrictMode>,
 );
 

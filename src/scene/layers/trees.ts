@@ -17,7 +17,7 @@ const PINES = [
   { x: 300, size: 3 },
 ];
 
-function drawLeafyTree(ctx: Ctx, x: number, baseY: number, size: number, look: SeasonLook, t: number): void {
+function drawLeafyTree(ctx: Ctx, x: number, baseY: number, size: number, look: SeasonLook): void {
   const trunkW = size + 2;
   const trunkH = 6 * size;
   const top = baseY - trunkH;
@@ -41,8 +41,7 @@ function drawLeafyTree(ctx: Ctx, x: number, baseY: number, size: number, look: S
   // Canopy: one big blob plus a shaded and a highlighted smaller blob.
   const [main, highlight, shade] = look.leaves;
   const r = 4 * size + 1;
-  const sway = Math.round(Math.sin(t * 0.8 + x) * 0.6); // -1, 0 or 1 pixel
-  const cx = x + sway;
+  const cx = x;
   const cy = top - r + 3;
   disc(ctx, cx, cy, r, main);
   disc(ctx, cx - r / 2, cy + 2, r * 0.6, shade);
@@ -75,7 +74,8 @@ function drawPine(ctx: Ctx, x: number, baseY: number, size: number, look: Season
   }
 }
 
-export const drawTrees: Layer = (ctx, { season }, t) => {
+// The trees stand still (no wind animation for now).
+export const drawTrees: Layer = (ctx, { season }) => {
   for (const pine of PINES) drawPine(ctx, pine.x, GROUND_Y + 2, pine.size, season);
-  for (const tree of LEAFY) drawLeafyTree(ctx, tree.x, GROUND_Y + 2, tree.size, season, t);
+  for (const tree of LEAFY) drawLeafyTree(ctx, tree.x, GROUND_Y + 2, tree.size, season);
 };
