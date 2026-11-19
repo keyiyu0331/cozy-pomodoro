@@ -27,7 +27,7 @@ No third-party image files are used.
 
 | File | Source | Licence |
 |---|---|---|
-| `Silkscreen-Regular.ttf`, `Silkscreen-Bold.ttf` | Silkscreen by Jason Kottke, from the Google Fonts repository (https://github.com/google/fonts/tree/main/ofl/silkscreen) | SIL Open Font License 1.1 — full text in `public/assets/fonts/OFL.txt` |
+| `Ithaca.ttf` | Ithaca by GGBotNet, from Fontspace (https://www.fontspace.com/ithaca-font-f144503) | SIL Open Font License 1.1 — full text in `public/assets/fonts/OFL-Ithaca.txt` |
 
 Typed text (notes, intentions) uses the system monospace font.
 

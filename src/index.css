@@ -3,19 +3,13 @@
    the current season's palette from scene/themeConfig.ts. During breaks the
    accent colour changes so you can tell focus from break at a glance. */
 
-/* The pixel font (Silkscreen, SIL Open Font License — see CREDITS.md).
-   font-display: swap shows text in the fallback font until it has loaded. */
+/* The pixel font: Ithaca by GGBotNet (SIL Open Font License — see CREDITS.md).
+   It has a single weight. font-display: swap shows text in the fallback font
+   until it has loaded. */
 @font-face {
-  font-family: 'Silkscreen';
-  src: url('/assets/fonts/Silkscreen-Regular.ttf') format('truetype');
+  font-family: 'Ithaca';
+  src: url('/assets/fonts/Ithaca.ttf') format('truetype');
   font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Silkscreen';
-  src: url('/assets/fonts/Silkscreen-Bold.ttf') format('truetype');
-  font-weight: 700;
   font-display: swap;
 }
 
@@ -32,9 +26,8 @@
   --accent-long-break: #8a62ac;
   --accent-ink: #fff8ea;
   /* Pixel font for the interface... */
-  --font: 'Silkscreen', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  /* ...and a plain one for things you type and read at length (Silkscreen
-     has no lower-case letters, which gets tiring in long notes). */
+  --font: 'Ithaca', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* ...and a plain one for things you type and read at length. */
   --font-text: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
@@ -76,6 +69,8 @@ body,
 
 body {
   font-family: var(--font);
+  /* Ithaca has no bold. Don't let the browser fake one by smearing the pixels. */
+  font-synthesis: none;
   color: var(--ink);
   background: var(--bg);
 }
