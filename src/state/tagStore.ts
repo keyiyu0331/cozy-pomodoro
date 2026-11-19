@@ -34,11 +34,11 @@ export const useTagStore = create<TagStore>()(
     }),
     {
       name: 'cozy-pomodoro-tags',
-      version: 2,
-      // Version 1 → 2: the starter tags changed to the new colour palette.
+      version: 3,
+      // Versions 2 and 3 each changed the starter tags' colour palette.
       migrate: (saved, version) => {
         const state = saved as { tags?: Tag[] };
-        if (version < 2 && Array.isArray(state.tags)) state.tags = recolorOldDefaults(state.tags);
+        if (version < 3 && Array.isArray(state.tags)) state.tags = recolorOldDefaults(state.tags);
         return state as TagStore;
       },
     },

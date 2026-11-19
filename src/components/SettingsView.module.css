@@ -87,14 +87,30 @@
   margin-bottom: 8px;
 }
 
+/* The tag's colour square: just the colour, no frame. The ::-webkit and
+   ::-moz rules remove the browser's own inner border and padding. */
 .color {
   flex: none;
-  width: 36px;
-  height: 34px;
-  padding: 2px;
-  background: #fff;
-  border: 3px solid var(--wood-dark);
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: none;
+  border: none;
   cursor: pointer;
+}
+
+.color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color::-webkit-color-swatch {
+  border: none;
+  border-radius: 0;
+}
+
+.color::-moz-color-swatch {
+  border: none;
+  border-radius: 0;
 }
 
 .tagName {

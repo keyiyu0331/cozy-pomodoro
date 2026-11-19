@@ -307,14 +307,15 @@ describe('isReviewDue', () => {
 
 describe('tag colours', () => {
   it('hands out the palette in order, then starts again', () => {
-    expect([0, 1, 2, 3, 4, 5].map(nextTagColor)).toEqual([...TAG_PALETTE, TAG_PALETTE[0], TAG_PALETTE[1]]);
+    expect(TAG_PALETTE).toEqual(['#6BB1AD', '#E6748E', '#A7BCBD', '#E5A9A9', '#EDECDB']);
+    expect([0, 1, 2, 3, 4, 5, 6].map(nextTagColor)).toEqual([...TAG_PALETTE, TAG_PALETTE[0], TAG_PALETTE[1]]);
   });
 
   it('recolours saved starter tags, but not colours you chose or tags you made', () => {
     const saved = [
-      { id: 'coursework', name: 'Uni', color: '#3d76a6' }, // old default, renamed
+      { id: 'coursework', name: 'Uni', color: '#DE7272' }, // previous default, renamed
       { id: 'job-prep', name: 'Job prep', color: '#123456' }, // you changed the colour
-      { id: 'side-project', name: 'Side project', color: '#4D8A4A' }, // old default, upper case
+      { id: 'side-project', name: 'Side project', color: '#4D8A4A' }, // oldest default, upper case
       { id: 'my-own', name: 'Reading', color: '#3d76a6' }, // your own tag
     ];
     expect(recolorOldDefaults(saved).map((t) => t.color)).toEqual([
