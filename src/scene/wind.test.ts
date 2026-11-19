@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Ctx } from './draw';
 import { WEATHER_ORDER } from './themeConfig';
 import { POSE_A, POSE_B, REST, rustlePose } from './tree/rustle';
-import { CELL, TREE_W, buildTreePose } from './tree/treePose';
+import { CELL, buildTreePose, treeShape } from './tree/treePose';
 import { drawLooseLeaves } from './weather/looseLeaves';
 import { drawStreaks } from './weather/streaks';
 import {
@@ -104,62 +104,71 @@ describe('rain and grass', () => {
 
 describe('tree poses', () => {
   const seed = 7;
-  const rest = buildTreePose('rest', seed);
-  const a = buildTreePose('a', seed);
-  const b = buildTreePose('b', seed);
   const fixed = (cell: number) => cell >= CELL.SHADOW && cell <= CELL.TRUNK_LIGHT; // shadow or trunk
-  const changed = (pose: typeof rest) => [...rest.cells.keys()].filter((i) => rest.cells[i] !== pose.cells[i]);
+  const isCanopy = (cell: number) => cell >= CELL.TONE_0;
 
   it('is repeatable, and different seeds give different trees', () => {
-    expect(buildTreePose('rest', seed).cells).toEqual(rest.cells);
-    expect(buildTreePose('rest', seed + 1).cells).not.toEqual(rest.cells);
+    expect(buildTreePose('rest', seed, 3).cells).toEqual(buildTreePose('rest', seed, 3).cells);
+    expect(buildTreePose('rest', seed + 1, 3).cells).not.toEqual(buildTreePose('rest', seed, 3).cells);
   });
 
-  it('has a canopy about 50–60 pixels wide', () => {
-    const columns = new Set<number>();
-    rest.cells.forEach((cell, i) => {
-      if (cell >= CELL.OUTLINE) columns.add(i % TREE_W);
+  it('matches the old tree sizes: canopies about 19 and 27 pixels wide', () => {
+    for (const [size, expected] of [[2, 19], [3, 27]]) {
+      const pose = buildTreePose('rest', seed, size);
+      const columns = new Set<number>();
+      pose.cells.forEach((cell, i) => {
+        if (isCanopy(cell)) columns.add(i % pose.width);
+      });
+      expect(Math.abs(columns.size - expected)).toBeLessThanOrEqual(3);
+      expect(treeShape(size).canopyRadius).toBe(4 * size + 1);
+    }
+  });
+
+  for (const size of [2, 3]) {
+    const rest = buildTreePose('rest', seed, size);
+    const a = buildTreePose('a', seed, size);
+    const b = buildTreePose('b', seed, size);
+    const changed = (pose: typeof rest) => [...rest.cells.keys()].filter((i) => rest.cells[i] !== pose.cells[i]);
+
+    it(`size ${size}: never changes a trunk or shadow pixel between poses`, () => {
+      for (const pose of [a, b]) {
+        rest.cells.forEach((cell, i) => {
+          if (fixed(cell) || fixed(pose.cells[i])) expect(pose.cells[i]).toBe(cell);
+        });
+      }
     });
-    expect(columns.size).toBeGreaterThanOrEqual(48);
-    expect(columns.size).toBeLessThanOrEqual(60);
-  });
 
-  it('never changes a trunk or shadow pixel between poses', () => {
-    for (const pose of [a, b]) {
-      rest.cells.forEach((cell, i) => {
-        if (fixed(cell) || fixed(pose.cells[i])) expect(pose.cells[i]).toBe(cell);
-      });
-    }
-  });
+    it(`size ${size}: changes only a small scattering of canopy pixels, different for A and B`, () => {
+      const canopyPixels = rest.cells.filter(isCanopy).length;
+      for (const pose of [a, b]) {
+        const count = changed(pose).length;
+        expect(count).toBeGreaterThan(3);
+        expect(count).toBeLessThan(canopyPixels * 0.25);
+      }
+      expect(changed(a)).not.toEqual(changed(b));
+    });
 
-  it('changes only a small scattering of canopy pixels, different for A and B', () => {
-    const canopyPixels = rest.cells.filter((cell) => cell >= CELL.OUTLINE).length;
-    for (const pose of [a, b]) {
-      const count = changed(pose).length;
-      expect(count).toBeGreaterThan(10);
-      expect(count).toBeLessThan(canopyPixels * 0.15);
-    }
-    expect(changed(a)).not.toEqual(changed(b));
-  });
-
-  it('moves the outline by at most 1 pixel', () => {
-    const isCanopy = (pose: typeof rest, i: number) => pose.cells[i] >= CELL.OUTLINE;
-    for (const pose of [a, b]) {
-      rest.cells.forEach((_, i) => {
-        if (isCanopy(rest, i) === isCanopy(pose, i)) return; // silhouette unchanged here
-        // A pixel that joined or left the canopy must touch the REST outline.
-        const x = i % TREE_W;
-        const y = Math.floor(i / TREE_W);
-        let touchesRim = false;
-        for (let dy = -1; dy <= 1; dy++) {
-          for (let dx = -1; dx <= 1; dx++) {
-            if (rest.cells[(y + dy) * TREE_W + x + dx] === CELL.OUTLINE) touchesRim = true;
+    it(`size ${size}: moves the canopy's edge by at most 1 pixel`, () => {
+      const w = rest.width;
+      const restCanopy = (x: number, y: number) =>
+        x >= 0 && y >= 0 && x < w && y < rest.height && isCanopy(rest.cells[y * w + x]);
+      // The edge of the REST canopy: canopy pixels with a non-canopy pixel beside them.
+      const onRestEdge = (x: number, y: number) =>
+        restCanopy(x, y) && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => !restCanopy(x + dx, y + dy));
+      for (const pose of [a, b]) {
+        rest.cells.forEach((cell, i) => {
+          if (isCanopy(cell) === isCanopy(pose.cells[i])) return; // silhouette unchanged here
+          const x = i % w;
+          const y = Math.floor(i / w);
+          let nearEdge = false;
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) if (onRestEdge(x + dx, y + dy)) nearEdge = true;
           }
-        }
-        expect(touchesRim).toBe(true);
-      });
-    }
-  });
+          expect(nearEdge).toBe(true);
+        });
+      }
+    });
+  }
 });
 
 describe('rustlePose', () => {

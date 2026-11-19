@@ -10,7 +10,7 @@ import { drawLooseLeaves } from '../weather/looseLeaves';
 import { drawStreaks, type Area } from '../weather/streaks';
 import type { Wind } from '../wind';
 import { REST, rustlePose, type PoseIndex } from './rustle';
-import { CANOPY_RADIUS, CANOPY_Y, TRUNK_BASE_Y } from './treePose';
+import { treeShape } from './treePose';
 import { drawTree } from './treeSprite';
 
 export interface WindTree {
@@ -20,6 +20,8 @@ export interface WindTree {
   baseY: number;
   /** Gives the tree its own shape and its own rustle timing. */
   seed: number;
+  /** 2 = small, 3 = large. */
+  size: number;
 }
 
 export interface WindTreesOptions {
@@ -43,13 +45,14 @@ export function treePoseAt(tree: WindTree, options: WindTreesOptions): PoseIndex
 
 export function drawWindTrees(ctx: Ctx, trees: WindTree[], options: WindTreesOptions): void {
   for (const tree of trees) {
-    drawTree(ctx, tree.x, tree.baseY, options.season, tree.seed, treePoseAt(tree, options));
+    drawTree(ctx, tree.x, tree.baseY, options.season, tree.seed, tree.size, treePoseAt(tree, options));
   }
   if (options.reducedMotion) return;
 
   drawStreaks(ctx, options.area, options.t, options.wind);
   for (const tree of trees) {
-    const canopy = { x: tree.x, y: tree.baseY - TRUNK_BASE_Y + CANOPY_Y, radius: CANOPY_RADIUS };
+    const shape = treeShape(tree.size);
+    const canopy = { x: tree.x, y: tree.baseY - shape.baseY + shape.canopyY, radius: shape.canopyRadius };
     drawLooseLeaves(ctx, canopy, TREE_LOOKS[options.season].looseLeaves, options.t, options.wind, tree.seed);
   }
 }

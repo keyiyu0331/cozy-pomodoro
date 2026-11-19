@@ -72,8 +72,7 @@ export const WEATHERS: Record<Weather, WeatherLook> = {
 
 /** Colours of the leafy trees for one season. */
 export interface TreeLook {
-  outline: string;
-  /** Canopy greens, darkest first — exactly 5. */
+  /** Canopy colours, darkest first — exactly 5. */
   tones: [string, string, string, string, string];
   /** Trunk: [shaded side, middle, lit side]. */
   trunk: [string, string, string];
@@ -87,28 +86,24 @@ export const TREE_SHADOW = 'rgba(0, 0, 0, 0.22)';
 
 export const TREE_LOOKS: Record<Season, TreeLook> = {
   spring: {
-    outline: '#16424a',
     tones: ['#236357', '#34865a', '#4fa856', '#7cc75a', '#bfe36a'],
     trunk: ['#5a2e22', '#8a4a34', '#a8623f'],
     blossom: '#f7b6d2',
     looseLeaves: ['#f7b6d2', '#ffd9e8'],
   },
   summer: {
-    outline: '#16424a',
     tones: ['#1f5c57', '#2c7a52', '#3f9a4c', '#62b84e', '#a6d655'],
     trunk: ['#5a2e22', '#8a4a34', '#a8623f'],
     blossom: null,
     looseLeaves: ['#2c7a52', '#3f9a4c'],
   },
   autumn: {
-    outline: '#4a2418',
     tones: ['#7a2f1e', '#a8432a', '#d9642b', '#f0a030', '#f7cf5a'],
     trunk: ['#4f2a20', '#7a4430', '#9a5a3a'],
     blossom: null,
     looseLeaves: ['#d9642b', '#a8432a', '#8a5a2a'],
   },
   winter: {
-    outline: '#2f4a5a',
     tones: ['#4a6a72', '#6a8c8f', '#9ab5b5', '#cfe0e2', '#ffffff'],
     trunk: ['#4a3530', '#6a4c44', '#86655a'],
     blossom: null,

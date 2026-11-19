@@ -8,9 +8,9 @@ const SNOW = '#ffffff';
 
 /** Where the pines stand. `size` is a scale factor (1 = small). */
 const PINES = [
-  { x: 126, size: 3 },
-  { x: 162, size: 2 },
+  { x: 150, size: 2 },
   { x: 192, size: 1 },
+  { x: 300, size: 3 },
 ];
 
 function drawPine(ctx: Ctx, x: number, baseY: number, size: number, look: SeasonLook): void {

@@ -1,5 +1,5 @@
 // The /wind-lab debug page: a test bench for the tree wind effects, apart
-// from the real scene. It shows one tree at ×6 and a row of three at ×3,
+// from the real scene. It shows one tree at ×10 and a row of three at ×5,
 // with controls to change the wind, slow things down, pause and step.
 //
 // The page keeps its OWN clock (`time`), which only moves while not paused
@@ -12,22 +12,22 @@ import { useEffect, useRef, useState } from 'react';
 import type { Ctx } from '../scene/draw';
 import { SEASON_ORDER, SEASONS, TREE_LOOKS, WEATHER_ORDER, WEATHERS } from '../scene/themeConfig';
 import { drawWindTrees, treePoseAt, type WindTree, type WindTreesOptions } from '../scene/tree/drawWindTrees';
-import { POSE_NAMES, TREE_H, TREE_W, buildTreePose, CELL, type PoseName } from '../scene/tree/treePose';
+import { POSE_NAMES, buildTreePose, CELL, treeShape, type PoseName } from '../scene/tree/treePose';
 import { renderPose } from '../scene/tree/treeSprite';
 import { createWind, rustleFps, windForWeather } from '../scene/wind';
 import type { Season, Weather } from '../types';
 import styles from './WindLab.module.css';
 
 // The two test pictures, in scene pixels.
-const BIG = { width: 104, height: 92, scale: 6, trees: [{ x: 52, baseY: 84, seed: 1 }] };
+const BIG = { width: 60, height: 54, scale: 10, trees: [{ x: 30, baseY: 48, seed: 2, size: 3 }] };
 const ROW = {
-  width: 264,
-  height: 92,
-  scale: 3,
+  width: 150,
+  height: 54,
+  scale: 5,
   trees: [
-    { x: 48, baseY: 84, seed: 1 },
-    { x: 132, baseY: 84, seed: 2 },
-    { x: 216, baseY: 84, seed: 3 },
+    { x: 28, baseY: 48, seed: 1, size: 2 },
+    { x: 76, baseY: 48, seed: 2, size: 3 },
+    { x: 122, baseY: 48, seed: 3, size: 2 },
   ],
 };
 const POSE_LABEL = ['REST', 'A', 'B'];
@@ -216,15 +216,15 @@ export default function WindLab() {
         style={{ width: ROW.width * ROW.scale, height: ROW.height * ROW.scale }}
       />
 
-      {showPoses && <PoseSheet season={season} seed={BIG.trees[0].seed} />}
+      {showPoses && <PoseSheet season={season} seed={BIG.trees[0].seed} size={BIG.trees[0].size} />}
     </main>
   );
 }
 
 /** The three poses side by side, plus pictures of exactly which pixels differ from REST. */
-function PoseSheet({ season, seed }: { season: Season; seed: number }) {
+function PoseSheet({ season, seed, size }: { season: Season; seed: number; size: number }) {
   const look = TREE_LOOKS[season];
-  const poses = POSE_NAMES.map((name) => buildTreePose(name, seed, look.blossom !== null));
+  const poses = POSE_NAMES.map((name) => buildTreePose(name, seed, size, look.blossom !== null));
   const [rest, a, b] = poses;
 
   const countChanged = (pose: typeof rest) => pose.cells.filter((cell, i) => cell !== rest.cells[i]).length;
@@ -240,13 +240,13 @@ function PoseSheet({ season, seed }: { season: Season; seed: number }) {
 
   return (
     <section>
-      <h2 className={styles.heading}>Poses, ×3</h2>
+      <h2 className={styles.heading}>Poses, ×{POSE_SCALE}</h2>
       <div className={styles.poses}>
         {POSE_NAMES.map((name, i) => (
-          <PosePicture key={name} season={season} seed={seed} pose={name} label={POSE_LABEL[i]} />
+          <PosePicture key={name} season={season} seed={seed} size={size} pose={name} label={POSE_LABEL[i]} />
         ))}
-        <PosePicture season={season} seed={seed} pose="a" diff label={`A vs REST: ${countChanged(a)} px differ`} />
-        <PosePicture season={season} seed={seed} pose="b" diff label={`B vs REST: ${countChanged(b)} px differ`} />
+        <PosePicture season={season} seed={seed} size={size} pose="a" diff label={`A vs REST: ${countChanged(a)} px`} />
+        <PosePicture season={season} seed={seed} size={size} pose="b" diff label={`B vs REST: ${countChanged(b)} px`} />
       </div>
       <p className={styles.readout}>
         Pink = pixels that differ from REST. Trunk and shadow pixels changed: {fixedChanged}.
@@ -255,42 +255,51 @@ function PoseSheet({ season, seed }: { season: Season; seed: number }) {
   );
 }
 
-function PosePicture(props: { season: Season; seed: number; pose: PoseName; label: string; diff?: boolean }) {
+const POSE_SCALE = 8;
+
+function PosePicture(props: {
+  season: Season;
+  seed: number;
+  size: number;
+  pose: PoseName;
+  label: string;
+  diff?: boolean;
+}) {
   const canvas = useRef<HTMLCanvasElement>(null);
+  const shape = treeShape(props.size);
 
   useEffect(() => {
     const ctx = canvas.current?.getContext('2d');
     if (!ctx) return;
     const look = TREE_LOOKS[props.season];
     const blossoms = look.blossom !== null;
-    const pose = buildTreePose(props.pose, props.seed, blossoms);
-    ctx.clearRect(0, 0, TREE_W, TREE_H);
+    const pose = buildTreePose(props.pose, props.seed, props.size, blossoms);
     ctx.fillStyle = SEASONS[props.season].ground;
-    ctx.fillRect(0, 0, TREE_W, TREE_H);
+    ctx.fillRect(0, 0, pose.width, pose.height);
 
     if (!props.diff) {
       ctx.drawImage(renderPose(pose, look), 0, 0);
       return;
     }
     // Diff view: REST faded out, with every differing pixel in pink.
-    const rest = buildTreePose('rest', props.seed, blossoms);
+    const rest = buildTreePose('rest', props.seed, props.size, blossoms);
     ctx.globalAlpha = 0.3;
     ctx.drawImage(renderPose(rest, look), 0, 0);
     ctx.globalAlpha = 1;
     ctx.fillStyle = '#ff00c8';
     pose.cells.forEach((cell, i) => {
-      if (cell !== rest.cells[i]) ctx.fillRect(i % TREE_W, Math.floor(i / TREE_W), 1, 1);
+      if (cell !== rest.cells[i]) ctx.fillRect(i % pose.width, Math.floor(i / pose.width), 1, 1);
     });
-  }, [props.season, props.seed, props.pose, props.diff]);
+  }, [props.season, props.seed, props.size, props.pose, props.diff]);
 
   return (
     <figure className={styles.pose}>
       <canvas
         ref={canvas}
         className={styles.canvas}
-        width={TREE_W}
-        height={TREE_H}
-        style={{ width: TREE_W * 3, height: TREE_H * 3 }}
+        width={shape.width}
+        height={shape.height}
+        style={{ width: shape.width * POSE_SCALE, height: shape.height * POSE_SCALE }}
       />
       <figcaption>{props.label}</figcaption>
     </figure>

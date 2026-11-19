@@ -11,7 +11,7 @@ import type { Season } from '../../types';
 import type { Ctx } from '../draw';
 import { TREE_LOOKS, TREE_SHADOW, type TreeLook } from '../themeConfig';
 import type { PoseIndex } from './rustle';
-import { CELL, POSE_NAMES, TREE_H, TREE_W, TRUNK_BASE_Y, buildTreePose, type TreePose } from './treePose';
+import { CELL, POSE_NAMES, buildTreePose, treeShape, type TreePose } from './treePose';
 
 export interface TreeFrames {
   /** [REST, A, B] */
@@ -35,8 +35,6 @@ function colorOf(cell: number, look: TreeLook): string | null {
       return look.trunk[1];
     case CELL.TRUNK_LIGHT:
       return look.trunk[2];
-    case CELL.OUTLINE:
-      return look.outline;
     case CELL.BLOSSOM:
       return look.blossom ?? look.tones[4];
     default:
@@ -84,20 +82,24 @@ function requestSheet(): void {
   image.src = `${import.meta.env.BASE_URL}assets/sprites/tree_oak.png`;
 }
 
-/** The three frames for a tree: the sprite sheet if present, else the generated placeholder. */
-export function getTreeFrames(season: Season, seed: number): TreeFrames {
+/**
+ * The three frames for a tree: the sprite sheet if present, else the generated
+ * placeholder at the given size (2 = small, 3 = large).
+ */
+export function getTreeFrames(season: Season, seed: number, size: number): TreeFrames {
   requestSheet();
   if (sheet) return sheet;
 
-  const key = `${season}|${seed}`;
+  const key = `${season}|${seed}|${size}`;
   let frames = generated.get(key);
   if (!frames) {
     const look = TREE_LOOKS[season];
+    const shape = treeShape(size);
     frames = {
-      frames: POSE_NAMES.map((name) => renderPose(buildTreePose(name, seed, look.blossom !== null), look)),
-      width: TREE_W,
-      height: TREE_H,
-      baseY: TRUNK_BASE_Y,
+      frames: POSE_NAMES.map((name) => renderPose(buildTreePose(name, seed, size, look.blossom !== null), look)),
+      width: shape.width,
+      height: shape.height,
+      baseY: shape.baseY,
     };
     generated.set(key, frames);
   }
@@ -105,7 +107,15 @@ export function getTreeFrames(season: Season, seed: number): TreeFrames {
 }
 
 /** Draw one tree, centred on x and standing on baseY, in the given pose. */
-export function drawTree(ctx: Ctx, x: number, baseY: number, season: Season, seed: number, pose: PoseIndex): void {
-  const tree = getTreeFrames(season, seed);
+export function drawTree(
+  ctx: Ctx,
+  x: number,
+  baseY: number,
+  season: Season,
+  seed: number,
+  size: number,
+  pose: PoseIndex,
+): void {
+  const tree = getTreeFrames(season, seed, size);
   ctx.drawImage(tree.frames[pose], Math.round(x - tree.width / 2), Math.round(baseY - tree.baseY));
 }

@@ -7,11 +7,11 @@
 import { GROUND_Y, SCENE_H, SCENE_W, type Layer } from '../draw';
 import { drawWindTrees, type WindTree } from '../tree/drawWindTrees';
 
-/** x = centre of the trunk; seed = the tree's own shape and rustle timing. */
+/** x = centre of the trunk; seed = the tree's own shape and rustle timing; size 2 = small, 3 = large. */
 const TREES: WindTree[] = [
-  { x: 8, baseY: GROUND_Y + 3, seed: 1 },
-  { x: 236, baseY: GROUND_Y + 3, seed: 2 },
-  { x: 292, baseY: GROUND_Y + 3, seed: 3 },
+  { x: 12, baseY: GROUND_Y + 2, seed: 1, size: 2 },
+  { x: 236, baseY: GROUND_Y + 2, seed: 2, size: 3 },
+  { x: 272, baseY: GROUND_Y + 2, seed: 3, size: 2 },
 ];
 
 /** Streaks appear over the trees and the grass, not high in the sky. */
