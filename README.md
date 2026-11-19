@@ -26,6 +26,14 @@ Then open the address it prints (usually http://localhost:5173).
 | `npm run generate-audio` | Regenerate the placeholder sounds |
 | `npm run generate-icons` | Regenerate the app icons |
 
+## Live site
+
+The app is published at https://keyiyu0331.github.io/cozy-pomodoro/ and is
+rebuilt automatically whenever `main` changes (see
+`.github/workflows/deploy.yml`). Open it in Chrome or Edge and use the install
+button in the address bar to add it as an app; after the first visit it works
+offline.
+
 ## Install it / use it offline
 
 Offline support and installing only work in the **built** app, not in `npm run dev`:
