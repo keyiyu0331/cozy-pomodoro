@@ -81,6 +81,16 @@ pub fn run() {
     .manage(Alarm::default())
     .invoke_handler(tauri::generate_handler![schedule_alarm, cancel_alarm])
     .setup(|app| {
+      // Self-test for the pop-up, used when checking a build: start the app
+      // with COZY_POMODORO_SELFTEST=1 in the environment and it brings its
+      // window forward 8 seconds after launch. Never set in normal use.
+      if std::env::var("COZY_POMODORO_SELFTEST").is_ok() {
+        let handle = app.handle().clone();
+        std::thread::spawn(move || {
+          std::thread::sleep(Duration::from_secs(8));
+          bring_to_front(&handle);
+        });
+      }
       if cfg!(debug_assertions) {
         app.handle().plugin(
           tauri_plugin_log::Builder::default()
