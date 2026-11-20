@@ -33,13 +33,15 @@ export interface WindTreesOptions {
   area: Area;
   /** Poses per second; leave out to let the wind decide. */
   fps?: number;
+  /** false = the canopies stay in REST (streaks and leaves still follow the wind). */
+  rustle: boolean;
   /** true = canopy stays in REST, no streaks, no leaves. */
   reducedMotion: boolean;
 }
 
 /** The pose a tree is in right now. */
 export function treePoseAt(tree: WindTree, options: WindTreesOptions): PoseIndex {
-  if (options.reducedMotion) return REST;
+  if (options.reducedMotion || !options.rustle) return REST;
   return rustlePose(options.t, options.wind.strength, tree.seed, options.fps);
 }
 

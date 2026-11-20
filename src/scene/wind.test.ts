@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Ctx } from './draw';
-import { WEATHER_ORDER } from './themeConfig';
+import { WEATHER_ORDER, WEATHERS } from './themeConfig';
+import { treePoseAt } from './tree/drawWindTrees';
 import { POSE_A, POSE_B, REST, rustlePose } from './tree/rustle';
 import { CELL, buildTreePose, treeShape } from './tree/treePose';
 import { drawLooseLeaves } from './weather/looseLeaves';
@@ -249,5 +250,38 @@ describe('streaks and loose leaves', () => {
 
   it('draws no leaves when the season has none (winter)', () => {
     expect(leaves(1, [])).toBe(0);
+  });
+});
+
+describe('treePoseAt', () => {
+  const tree = { x: 236, baseY: 130, seed: 2, size: 3 };
+  const posesSeen = (weather: (typeof WEATHER_ORDER)[number], reducedMotion = false) => {
+    const seen = new Set<number>();
+    for (let t = 0; t < 120; t += 0.05) {
+      seen.add(
+        treePoseAt(tree, {
+          season: 'summer',
+          t,
+          wind: blowing(windForWeather(weather)),
+          area: { x: 0, y: 0, width: 320, height: 180 },
+          rustle: WEATHERS[weather].treesRustle,
+          reducedMotion,
+        }),
+      );
+    }
+    return [...seen].sort();
+  };
+
+  it('keeps the canopy in REST in Clear, Rain and Fog', () => {
+    expect(posesSeen('clear')).toEqual([REST]);
+    expect(posesSeen('rain')).toEqual([REST]);
+    expect(posesSeen('fog')).toEqual([REST]);
+  });
+
+  it('rustles in Windy, Storm and Snow, but never with reduced motion', () => {
+    expect(posesSeen('windy')).toEqual([REST, POSE_A, POSE_B]);
+    expect(posesSeen('storm')).toEqual([REST, POSE_A, POSE_B]);
+    expect(posesSeen('snow')).toEqual([REST, POSE_A, POSE_B]);
+    expect(posesSeen('windy', true)).toEqual([REST]);
   });
 });

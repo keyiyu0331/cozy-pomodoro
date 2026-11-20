@@ -64,17 +64,19 @@ export interface WeatherLook {
   critters: boolean;
   /** How windy it is: 0 = dead calm, 1 = storm. scene/wind.ts turns this into rates. */
   wind: number;
+  /** Do the tree canopies rustle in this weather? false = the trees stand still. */
+  treesRustle: boolean;
 }
 
 export const WEATHER_ORDER: Weather[] = ['clear', 'rain', 'storm', 'snow', 'windy', 'fog'];
 
 export const WEATHERS: Record<Weather, WeatherLook> = {
-  clear: { label: 'Clear', particles: [], intensity: 1, overcast: null, lightning: false, critters: true, wind: 0.15 },
-  rain: { label: 'Rain', particles: ['rain'], intensity: 1, overcast: 'rgba(70, 80, 100, 0.35)', lightning: false, critters: false, wind: 0.35 },
-  storm: { label: 'Storm', particles: ['rain'], intensity: 1.8, overcast: 'rgba(38, 42, 68, 0.55)', lightning: true, critters: false, wind: 1 },
-  snow: { label: 'Snow', particles: ['snow'], intensity: 1, overcast: 'rgba(200, 210, 225, 0.30)', lightning: false, critters: false, wind: 0.2 },
-  windy: { label: 'Windy', particles: [], intensity: 1, overcast: null, lightning: false, critters: true, wind: 0.7 },
-  fog: { label: 'Fog', particles: ['fog'], intensity: 1, overcast: 'rgba(214, 218, 222, 0.28)', lightning: false, critters: true, wind: 0 },
+  clear: { label: 'Clear', particles: [], intensity: 1, overcast: null, lightning: false, critters: true, wind: 0.15, treesRustle: false },
+  rain: { label: 'Rain', particles: ['rain'], intensity: 1, overcast: 'rgba(70, 80, 100, 0.35)', lightning: false, critters: false, wind: 0.35, treesRustle: false },
+  storm: { label: 'Storm', particles: ['rain'], intensity: 1.8, overcast: 'rgba(38, 42, 68, 0.55)', lightning: true, critters: false, wind: 1, treesRustle: true },
+  snow: { label: 'Snow', particles: ['snow'], intensity: 1, overcast: 'rgba(200, 210, 225, 0.30)', lightning: false, critters: false, wind: 0.2, treesRustle: true },
+  windy: { label: 'Windy', particles: [], intensity: 1, overcast: null, lightning: false, critters: true, wind: 0.7, treesRustle: true },
+  fog: { label: 'Fog', particles: ['fog'], intensity: 1, overcast: 'rgba(214, 218, 222, 0.28)', lightning: false, critters: true, wind: 0, treesRustle: false },
 };
 
 /** Colours of the leafy trees for one season. */

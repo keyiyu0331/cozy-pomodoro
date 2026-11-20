@@ -55,6 +55,13 @@ describe('drawScene', () => {
 });
 
 describe('weather config', () => {
+  it('keeps the trees still in Clear and Rain, and rustling in Windy and Storm', () => {
+    expect(WEATHERS.clear.treesRustle).toBe(false);
+    expect(WEATHERS.rain.treesRustle).toBe(false);
+    expect(WEATHERS.windy.treesRustle).toBe(true);
+    expect(WEATHERS.storm.treesRustle).toBe(true);
+  });
+
   it('every particle name used by a weather exists in the PARTICLES table', () => {
     for (const weather of WEATHER_ORDER) {
       for (const name of WEATHERS[weather].particles) {

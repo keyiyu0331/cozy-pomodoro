@@ -23,6 +23,7 @@ export const drawWindTreesLayer: Layer = (ctx, theme, t) => {
     t,
     wind: theme.wind,
     area: STREAK_AREA,
+    rustle: theme.weather.treesRustle,
     reducedMotion: !theme.animated,
   });
 };

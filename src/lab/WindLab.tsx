@@ -37,6 +37,8 @@ interface Settings {
   /** undefined = automatic (6, or 8 in a storm) */
   fps: number | undefined;
   paused: boolean;
+  /** false for weathers where the trees stand still (Clear, Rain, Fog) */
+  rustle: boolean;
   reducedMotion: boolean;
 }
 
@@ -63,8 +65,9 @@ export default function WindLab() {
   const time = useRef(0);
 
   // The draw loop reads the latest settings from here without restarting.
-  const settings = useRef<Settings>({ season, fps: undefined, paused, reducedMotion });
-  settings.current = { season, fps: autoFps ? undefined : manualFps, paused, reducedMotion };
+  const rustle = WEATHERS[weather].treesRustle;
+  const settings = useRef<Settings>({ season, fps: undefined, paused, rustle, reducedMotion });
+  settings.current = { season, fps: autoFps ? undefined : manualFps, paused, rustle, reducedMotion };
   wind.current.setTarget(target);
 
   /** Draw both pictures for the current clock, and refresh the read-out. */
@@ -75,6 +78,7 @@ export default function WindLab() {
       t: time.current,
       wind: wind.current,
       fps: now.fps,
+      rustle: now.rustle,
       reducedMotion: now.reducedMotion,
       area: { x: 0, y: 0, width: BIG.width, height: BIG.height },
     };
@@ -139,7 +143,7 @@ export default function WindLab() {
           <select value={weather} onChange={(e) => chooseWeather(e.target.value as Weather)}>
             {WEATHER_ORDER.map((id) => (
               <option key={id} value={id}>
-                {WEATHERS[id].label} (wind {WEATHERS[id].wind})
+                {WEATHERS[id].label} (wind {WEATHERS[id].wind}{WEATHERS[id].treesRustle ? '' : ', trees still'})
               </option>
             ))}
           </select>
