@@ -1,10 +1,16 @@
 /* 12 columns (weeks) × 7 rows (Mon–Sun). Cells are listed week by week, so
-   the grid fills top-to-bottom, then moves one column right. */
+   the grid fills top-to-bottom, then moves one column right.
+
+   Sizing is kept deliberately plain so every browser engine agrees (the
+   desktop app uses Safari's engine, the website usually Chrome's):
+   - columns are minmax(0, 1fr): 12 equal shares of the panel's width, which
+     may never grow wider because of what is inside them;
+   - a cell's height comes from the square crop picture inside it. */
 
 .months,
 .grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 3px;
 }
 
@@ -29,7 +35,9 @@
 .future,
 .legendCell {
   display: block;
-  aspect-ratio: 1;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   padding: 1px;
   background: #fff8e8;
   border: 2px solid transparent;
@@ -55,7 +63,8 @@
 .crop {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 1;
 }
 
 .soil {
