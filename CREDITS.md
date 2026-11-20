@@ -31,7 +31,7 @@ The end-of-phase chimes are synthesised live in the browser by `src/audio/chime.
 
 | What | Source | Licence |
 |---|---|---|
-| Scene (sky, hills, trees, cottage, ground, weather) | Drawn in code in `src/scene/layers/` and `src/scene/weather/` | Own work |
+| Scene (sky, hills, trees, house, ground, weather) | Drawn in code in `src/scene/layers/` and `src/scene/weather/` | Own work |
 | Sprites (cat, chickens, birds) | Pixel maps in `src/scene/sprites.ts` | Own work |
 | Heatmap crops | Pixel maps in `src/components/Heatmap.tsx` | Own work |
 | Mood faces (Distracted, Neutral, Focused) | Pixel maps in `src/lib/moods.ts` | Own work |

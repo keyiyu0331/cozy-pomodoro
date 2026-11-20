@@ -8,8 +8,10 @@ export const SCENE_H = 180;
 /** y where the sky/hills stop and the ground starts. */
 export const GROUND_Y = 128;
 
-/** Left edge of the cottage walls (the path in ground.ts starts at its door). */
-export const COTTAGE_X = 40;
+/** Left edge of the house's ground-floor walls. */
+export const HOUSE_X = 34;
+/** Centre of the house's front door (the path in ground.ts starts here). */
+export const HOUSE_DOOR_X = HOUSE_X + 30;
 
 export type Ctx = CanvasRenderingContext2D;
 

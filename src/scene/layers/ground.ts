@@ -1,16 +1,16 @@
-// Front layer: the ground, a dirt path from the cottage door, wind-blown grass
+// Front layer: the ground, a dirt path from the house's door, wind-blown grass
 // tufts, and seasonal dots (spring flowers, fallen autumn leaves).
 
-import { COTTAGE_X, GROUND_Y, SCENE_H, SCENE_W, rand, rect, type Layer } from '../draw';
+import { GROUND_Y, HOUSE_DOOR_X, SCENE_H, SCENE_W, rand, rect, type Layer } from '../draw';
 import { grassLean } from '../wind';
 
 const GROUND_H = SCENE_H - GROUND_Y;
-const PATH_TOP = GROUND_Y + 3; // the cottage's doorstep
+const PATH_TOP = GROUND_Y + 2; // just below the door's stepping stone
 
 /** The path's centre and width at a given y (it widens as it comes closer). */
 function pathAt(y: number): { centre: number; width: number } {
   const down = y - PATH_TOP;
-  return { centre: COTTAGE_X + 25 + down * 0.5 + Math.sin(y * 0.15) * 2, width: 9 + down * 0.25 };
+  return { centre: HOUSE_DOOR_X + down * 0.5 + Math.sin(y * 0.15) * 2, width: 9 + down * 0.25 };
 }
 
 function onPath(x: number, y: number): boolean {

@@ -3,7 +3,7 @@
 // and the time, and it paints — it knows nothing about React or the page.
 
 import type { Ctx, Layer } from './draw';
-import { drawCottage, drawLights } from './layers/cottage';
+import { drawHouse, drawHouseGarden, drawLights } from './layers/house';
 import { drawCritters } from './layers/critters';
 import { drawGround } from './layers/ground';
 import { drawHills } from './layers/hills';
@@ -21,10 +21,11 @@ const LAYERS: Layer[] = [
   drawSky,
   drawHills,
   drawTrees, // pines
-  drawCottage,
+  drawHouse,
   drawGround,
   drawWindTreesLayer, // leafy trees, wind streaks, loose leaves
-  drawProps, // fence, flower boxes
+  drawProps, // fence
+  drawHouseGarden, // bushes, stepping stone, stone lantern
   drawCritters, // cat, chickens, birds
   drawWeather, // rain, snow, leaves, fog...
   drawOverlay,
