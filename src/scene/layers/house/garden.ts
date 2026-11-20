@@ -4,10 +4,10 @@
 
 import type { Season } from '../../../types';
 import { rect, type Ctx } from '../../draw';
-import { drawIvy, type Clump } from './ivy';
+import { drawVine, type Clump } from './vine';
 import { BASE, COLORS as C, DOOR, L, R, STONE_LANTERN } from './layout';
 
-/** Bushes at the foot of the ivy, left and right of the house. */
+/** Bushes at the foot of the vine, left and right of the house. */
 const BUSHES: Clump[] = [
   { x: L - 4, y: BASE - 1, radius: 6 },
   { x: L + 3, y: BASE + 1, radius: 4 },
@@ -23,11 +23,11 @@ export function drawGarden(ctx: Ctx, season: Season, snow: boolean): void {
 
   // A potted plant beside the door.
   const potX = DOOR.x - 7;
-  drawIvy(ctx, [{ x: potX + 2, y: BASE - 5, radius: 3 }], season);
+  drawVine(ctx, [{ x: potX + 2, y: BASE - 5, radius: 3 }], season);
   rect(ctx, potX, BASE - 2, 5, 3, C.norenShade);
   rect(ctx, potX, BASE - 2, 5, 1, C.noren);
 
-  drawIvy(ctx, BUSHES, season);
+  drawVine(ctx, BUSHES, season);
   drawStoneLantern(ctx, false, snow);
 }
 

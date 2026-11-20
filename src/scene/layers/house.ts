@@ -1,5 +1,5 @@
 // Middle layer: the house, a two-storey Japanese shop house with tiled
-// roofs, ivy and a stovepipe with drifting smoke. This file only puts the
+// roofs, a flowering vine, a cat on the bench and a stovepipe with smoke. This file only puts the
 // parts together, back to front; the parts are in the house/ folder.
 //
 // It exports three layers, because the house is painted at three moments:
@@ -9,8 +9,9 @@
 //                     they stay bright in the dark (plus the fireflies)
 
 import { rand, rect, type Layer } from '../draw';
+import { drawBenchCat } from './house/benchCat';
 import { drawGarden, drawStoneLantern } from './house/garden';
-import { drawIvy, type Clump } from './house/ivy';
+import { drawVine, type Clump } from './house/vine';
 import {
   COLORS as C,
   EAVE_ROWS,
@@ -30,8 +31,8 @@ import {
 import { drawRidge, drawTiledRoof } from './house/roof';
 import { drawGlass, drawLantern, drawLowerFloor, drawNoren, drawUpperFloor } from './house/walls';
 
-/** Ivy climbing the two front corners of the house. */
-const WALL_IVY: Clump[] = [
+/** The flowering vine climbing the two front corners of the house. */
+const WALL_VINE: Clump[] = [
   // left corner, ground to upper floor
   { x: L, y: BASE - 9, radius: 8 },
   { x: L - 2, y: BASE - 20, radius: 7 },
@@ -48,7 +49,7 @@ const WALL_IVY: Clump[] = [
   { x: R - 4, y: BASE - 49, radius: 4 },
 ];
 
-export const drawHouse: Layer = (ctx, { season, state }, t) => {
+export const drawHouse: Layer = (ctx, { season, state, animated }, t) => {
   // Stovepipe first, so the roof overlaps its foot.
   rect(ctx, PIPE.x, PIPE.top, 3, 16, C.metal[1]);
   rect(ctx, PIPE.x, PIPE.top, 1, 16, C.metal[2]);
@@ -75,16 +76,18 @@ export const drawHouse: Layer = (ctx, { season, state }, t) => {
   drawRidge(ctx, L + 8, R - 8, ROOF_TOP - 2, season.snow);
 
   drawLantern(ctx, false);
-  drawIvy(ctx, WALL_IVY, state.season);
+  drawBenchCat(ctx, t, animated);
+  drawVine(ctx, WALL_VINE, state.season);
 };
 
 export const drawHouseGarden: Layer = (ctx, { season, state }) => {
   drawGarden(ctx, state.season, season.snow);
 };
 
-export const drawLights: Layer = (ctx, { sky, season }, t) => {
+export const drawLights: Layer = (ctx, { sky, season, animated }, t) => {
   if (sky.windowsLit) {
     drawGlass(ctx, true);
+    drawBenchCat(ctx, t, animated); // again, in front of the lit window: a silhouette with bright eyes
     drawLantern(ctx, true);
     drawStoneLantern(ctx, true, season.snow);
 

@@ -168,3 +168,17 @@ describe('draw helpers', () => {
     }
   });
 });
+
+describe('bench cat', () => {
+  it('has rectangular sprites and keeps still with reduced motion', async () => {
+    const { BENCH_CAT_SPRITES, BENCH_CAT_ROUTINE_SECONDS, benchCatSprite } = await import('./layers/house/benchCat');
+    for (const sprite of BENCH_CAT_SPRITES) {
+      expect(new Set(sprite.map((row) => row.length)).size).toBe(1);
+    }
+    expect(benchCatSprite(3, false)).toBe(benchCatSprite(30, false));
+    // Over one full routine the cat sits, loafs and curls up.
+    const poses = new Set<unknown>();
+    for (let t = 1.5; t < BENCH_CAT_ROUTINE_SECONDS; t += 10) poses.add(benchCatSprite(t, true));
+    expect(poses.size).toBeGreaterThanOrEqual(3);
+  });
+});

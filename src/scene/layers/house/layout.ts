@@ -5,6 +5,7 @@
 //   main tiled roof  →  plaster-and-timber upper floor  →  small tiled eave
 //   →  wooden shopfront with a noren curtain over a sliding door.
 
+import type { Season } from '../../../types';
 import { GROUND_Y, HOUSE_X } from '../../draw';
 
 /** Left and right edges of the ground-floor walls, and the ground line. */
@@ -31,29 +32,43 @@ export const LANTERN = { x: R - 9, y: LOWER_TOP };
 export const STONE_LANTERN = { x: R + 12, y: BASE + 3 };
 export const PIPE = { x: R - 14, top: ROOF_TOP - 8 };
 
+// A pastel scheme: pink roofs, cream walls, a warm wooden frame and light
+// wooden planks, sky-blue glass, with orange and hot-pink accents.
 export const COLORS = {
   // Roof tiles, dark to light.
-  tile: ['#22365a', '#2f4a78', '#3e6196', '#5580b4', '#7ba3cf'],
+  tile: ['#c9558a', '#e672a2', '#f590b8', '#fbb0cd', '#ffd3e3'],
   snow: '#ffffff',
-  snowShade: '#d6e4f0',
-  // Dark timber frame, and the warmer planks of the shopfront.
-  timber: '#3f2619',
-  timberLight: '#5d3a26',
-  plank: ['#5f3a26', '#7c4d31', '#96633e', '#b07d4f'],
-  plaster: '#efe4cb',
-  plasterShade: '#d8c9a8',
-  plasterDeep: '#bfae8c',
-  stone: ['#5f5d5c', '#7f7c79', '#a09c96', '#bdb8af'],
-  glass: '#1c2a42',
-  glassShine: '#3b5578',
+  snowShade: '#dde8f2',
+  // The frame (posts, beams, window frames), and the shopfront's planks.
+  timber: '#7d4e33',
+  timberLight: '#a87650',
+  plank: ['#a9744d', '#c48f63', '#dbab7e', '#edc79d'],
+  plaster: '#fff3e6',
+  plasterShade: '#f8dcdc',
+  plasterDeep: '#e9bfd6',
+  stone: ['#8a8580', '#aaa49c', '#c8c2b8', '#e0dbd0'],
+  glass: '#8db9f2',
+  glassShine: '#dcecff',
   glow: '#ffd76a',
   glowDeep: '#f5a83a',
-  paper: '#f3ead4',
-  noren: '#c8502d',
-  norenShade: '#9e3a20',
-  norenMark: '#f6e7c4',
-  lantern: '#d5432c',
-  lanternShine: '#f0795a',
+  paper: '#fff8ea',
+  noren: '#f7a245',
+  norenShade: '#e37f3c',
+  norenMark: '#fff3d6',
+  lantern: '#f0649a',
+  lanternShine: '#ffa3c4',
   lanternLit: '#ffb648',
-  metal: ['#5d666e', '#8a949c', '#b6bfc6'],
+  metal: ['#7d858c', '#a3abb2', '#c9d0d5'],
+};
+
+/**
+ * The flowering vine on the house (think wisteria), per season: five flower
+ * shades from dark to light, and the colour of the few leaves showing through.
+ * Winter is frosted, like the trees.
+ */
+export const VINE: Record<Season, { tones: string[]; leaf: string }> = {
+  spring: { tones: ['#7d66bd', '#9c84d8', '#b9a4ea', '#d5c7f6', '#f1eaff'], leaf: '#8fcf86' },
+  summer: { tones: ['#6f58b0', '#8f76cf', '#ad97e4', '#cbbcf3', '#e9e0ff'], leaf: '#6fb873' },
+  autumn: { tones: ['#8a4f86', '#ab6aa3', '#c98bbd', '#e2afd3', '#f6d8ea'], leaf: '#d9a05a' },
+  winter: { tones: ['#8f93b8', '#aeb2d2', '#cdd0e6', '#e6e8f4', '#ffffff'], leaf: '#ffffff' },
 };
