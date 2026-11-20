@@ -18,10 +18,11 @@ domain). Each was trimmed, looped, levelled and compressed by
 | `birds.m4a` | "Early Summer Morning Ambience with Birds, Berlin" by Pfannkuchn — https://freesound.org/people/Pfannkuchn/sounds/457616/ | CC0 |
 | `crickets.m4a` | "Crickets At Night - Raw sound" by Defelozedd94 — https://freesound.org/people/Defelozedd94/sounds/522299/ | CC0 |
 | `water.m4a` | "Stream Wyre forest 8.1.14.flac" by turbostream — https://freesound.org/people/turbostream/sounds/220528/ | CC0 |
-| `fire.m4a` | A fireplace recording from Freesound — source link to be added | CC0 (to be confirmed) |
+| `fire.m4a` | "Silencyo_CC_Fire in Fireplace_Close Up_Reverberant2.aif" by silencyo — https://freesound.org/people/silencyo/sounds/81801/ | CC0 |
 
-The sources above were matched to the downloaded files by their length and
-format; confirm them against what was actually downloaded.
+The fire recording's source was given by the project owner. The other seven
+were matched to the downloaded files by their length and format; confirm them
+against what was actually downloaded.
 
 The end-of-phase chimes are synthesised live in the browser by `src/audio/chime.ts`
 (no audio file).
