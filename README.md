@@ -57,6 +57,11 @@ The same app can be built as a real Mac app, using [Tauri](https://tauri.app).
 In the desktop app, the window jumps to the front when a focus session ends
 (changeable under Settings → Behaviour → "Bring window to front").
 
+Closing the window with the red "x" only hides it: the app keeps running, the
+timer and sounds carry on, and the window comes back when the session ends.
+Click the Dock icon to show it sooner. To really quit, use Cozy Pomodoro →
+Quit (Cmd+Q).
+
 One-time setup: install Rust from https://rustup.rs. Xcode's command-line
 tools are also needed.
 
