@@ -79,6 +79,14 @@ describe('lightning', () => {
     }
   });
 
+  it('leaves 30 to 60 seconds between strikes', () => {
+    for (let cycle = 0; cycle < 200; cycle++) {
+      const gap = strikeTime(cycle + 1) - strikeTime(cycle);
+      expect(gap).toBeGreaterThanOrEqual(30);
+      expect(gap).toBeLessThanOrEqual(60);
+    }
+  });
+
   it('flashes right at the strike and is dark just before and well after', () => {
     const at = strikeTime(3);
     expect(flashStrength(at + 0.01)).toBeGreaterThan(0);

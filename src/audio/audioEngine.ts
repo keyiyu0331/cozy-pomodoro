@@ -57,8 +57,12 @@ function fadeLoop(id: string, target: number, fadeMs: number): void {
 function checkThunder(): void {
   const now = performance.now() / 1000; // the same clock the scene draws with
   const cycle = Math.floor(now / STRIKE_PERIOD);
-  if (cycle === lastThunderCycle || now < strikeTime(cycle) + THUNDER_DELAY_SECONDS) return;
+  const due = strikeTime(cycle) + THUNDER_DELAY_SECONDS;
+  if (cycle === lastThunderCycle || now < due) return;
   lastThunderCycle = cycle;
+  // If this period's strike was a while ago (you only just switched to Storm),
+  // skip it: thunder with no flash would be odd. Wait for the next strike.
+  if (now > due + 2) return;
   // There is one thunder recording; a slightly different speed and loudness
   // each time keeps the claps from sounding identical.
   const sound = getSound('thunder');
