@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
   surpriseWeather: false,
   reducedMotion: false,
   keepHistoryDays: 0,
+  popUpWindow: 'focusEnd',
 };
 
 interface SettingsStore extends Settings {

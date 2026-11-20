@@ -10,9 +10,12 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "generate-icons": "node scripts/generate-icons.mjs",
-    "process-audio": "node scripts/process-audio.mjs"
+    "process-audio": "node scripts/process-audio.mjs",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.12.5",
     "howler": "^2.2.4",
     "idb-keyval": "^6.3.0",
     "react": "^18.3.1",
@@ -20,6 +23,7 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.12.6",
     "@types/howler": "^2.2.13",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",

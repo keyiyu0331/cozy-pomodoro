@@ -57,4 +57,5 @@ Installed with npm; not assets, listed for completeness.
 | Zustand | MIT |
 | Howler.js | MIT |
 | idb-keyval | Apache-2.0 |
+| Tauri (desktop app only) | MIT / Apache-2.0 |
 | Vite, Vitest, TypeScript (build tools only) | MIT / MIT / Apache-2.0 |

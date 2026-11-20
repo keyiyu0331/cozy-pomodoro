@@ -51,6 +51,24 @@ Note that the built app is at a different address from `npm run dev`, and
 browsers keep data separately per address — so it starts with empty history.
 Use **Settings → Data → Export / Import** to move your data across.
 
+## Desktop app (Mac)
+
+The same app can be built as a real Mac app, using [Tauri](https://tauri.app).
+In the desktop app, the window jumps to the front when a focus session ends
+(changeable under Settings → Behaviour → "Bring window to front").
+
+One-time setup: install Rust from https://rustup.rs. Xcode's command-line
+tools are also needed.
+
+| Command | What it does |
+|---|---|
+| `npm run desktop:dev` | Run the desktop app while developing (reloads as you edit) |
+| `npm run desktop:build` | Build `Cozy Pomodoro.app` and a `.dmg` installer into `src-tauri/target/release/bundle/` |
+
+The desktop app keeps its own data, separate from any browser; use Settings →
+Data → Export / Import to move history across. It does not update itself:
+rebuild it to pick up changes.
+
 ## Wind lab
 
 With the dev server running, http://localhost:5173/wind-lab opens a test bench
@@ -70,10 +88,12 @@ src/
   state/       stores: timer, settings, history, tags, open dialog
   scene/       the pixel scene: theme data, layers, weather, wind, trees, renderer
   lab/         the /wind-lab debug page
+  desktop/     glue for the desktop app (does nothing on the website)
   audio/       sound layers, mix logic, Howler wrapper, chime
   components/  the panels and dialogs
   lib/         stats, export/import, retention, review logic
-scripts/       generators for sounds and icons; the offline service worker
+src-tauri/     the desktop app's native side (Rust) and its settings
+scripts/       sound processing, icon generator, the offline service worker
 public/        sounds, icons, web app manifest
 ```
 

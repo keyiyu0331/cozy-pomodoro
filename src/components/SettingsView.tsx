@@ -2,6 +2,8 @@
 // each change back with update(); the store saves them to localStorage.
 
 import { CHIMES, playChime } from '../audio/chime';
+import { isDesktopApp } from '../desktop/desktop';
+import { POP_UP_OPTIONS } from '../desktop/popUp';
 import { requestNotificationPermission } from '../lib/notifications';
 import { useSettingsStore } from '../state/settingsStore';
 import { DataSection } from './DataSection';
@@ -45,6 +47,17 @@ export function SettingsView() {
         </p>
       )}
 
+      {isDesktopApp && (
+        <label className={styles.row}>
+          <span>Bring window to front</span>
+          <select className={styles.select} value={s.popUpWindow}
+            onChange={(e) => s.update({ popUpWindow: e.target.value as typeof s.popUpWindow })}>
+            {POP_UP_OPTIONS.map((option) => (
+              <option key={option.id} value={option.id}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+      )}
       <label className={styles.row}>
         <span>End-of-day review prompt</span>
         <input type="checkbox" checked={s.reviewTime !== undefined}

@@ -25,6 +25,8 @@ export interface Settings {
   surpriseWeather: boolean;
   reducedMotion: boolean;
   reviewTime?: string; // "21:00"
+  /** Desktop app only: when the window jumps to the front by itself. */
+  popUpWindow: 'focusEnd' | 'everyPhase' | 'off';
   /** Delete sessions older than this many days (today = day 1). 0 = keep forever. */
   keepHistoryDays: number;
 }

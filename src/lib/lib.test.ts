@@ -3,6 +3,7 @@ import type { ActiveSession, SessionRecord, Settings } from '../types';
 import { FACE_COLORS, MOODS, moodFor } from './moods';
 import { pruneHistory } from './retention';
 import { buildSessionRecord } from './sessionRecord';
+import { shouldPopUp } from '../desktop/popUp';
 import { isReviewDue } from './review';
 import {
   addDays,
@@ -342,6 +343,21 @@ describe('moods', () => {
         expect(row.length).toBe(12);
         for (const pixel of row) if (pixel !== '.') expect(FACE_COLORS[pixel]).toBeDefined();
       }
+    }
+  });
+});
+
+describe('shouldPopUp', () => {
+  it('"focusEnd" raises the window only when a focus session ends', () => {
+    expect(shouldPopUp('focusEnd', 'focus')).toBe(true);
+    expect(shouldPopUp('focusEnd', 'shortBreak')).toBe(false);
+    expect(shouldPopUp('focusEnd', 'longBreak')).toBe(false);
+  });
+
+  it('"everyPhase" always does, "off" never does', () => {
+    for (const phase of ['focus', 'shortBreak', 'longBreak'] as const) {
+      expect(shouldPopUp('everyPhase', phase)).toBe(true);
+      expect(shouldPopUp('off', phase)).toBe(false);
     }
   });
 });
