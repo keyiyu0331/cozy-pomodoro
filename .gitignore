@@ -2,3 +2,6 @@ node_modules
 dist
 .DS_Store
 *.local
+
+# Raw recordings (large). Only the processed files in public/assets/audio are kept in git.
+/audio/

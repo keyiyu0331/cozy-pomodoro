@@ -23,7 +23,7 @@ Then open the address it prints (usually http://localhost:5173).
 | `npm test` | Run the unit tests |
 | `npm run build` | Check types and build the finished app into `dist/` |
 | `npm run preview` | Serve the built app from `dist/` (this is the installable, offline version) |
-| `npm run generate-audio` | Regenerate the placeholder sounds |
+| `npm run process-audio` | Rebuild the sound files from raw recordings in `audio/` (needs ffmpeg) |
 | `npm run generate-icons` | Regenerate the app icons |
 
 ## Live site

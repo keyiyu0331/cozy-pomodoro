@@ -59,8 +59,11 @@ function checkThunder(): void {
   const cycle = Math.floor(now / STRIKE_PERIOD);
   if (cycle === lastThunderCycle || now < strikeTime(cycle) + THUNDER_DELAY_SECONDS) return;
   lastThunderCycle = cycle;
+  // There is one thunder recording; a slightly different speed and loudness
+  // each time keeps the claps from sounding identical.
   const sound = getSound('thunder');
-  sound.volume(thunderVolume);
+  sound.rate(0.85 + Math.random() * 0.3);
+  sound.volume(thunderVolume * (0.7 + Math.random() * 0.3));
   sound.play();
 }
 

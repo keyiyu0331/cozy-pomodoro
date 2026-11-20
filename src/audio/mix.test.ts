@@ -35,7 +35,7 @@ describe('layerLevels', () => {
   it('lets a saved slider override the default, for that weather only', () => {
     const saved = { [mixKey('rain', 'fire')]: 0.4, [mixKey('rain', 'rain')]: 0 };
     expect(layerLevels('rain', 'afternoon', saved)).toMatchObject({ fire: 0.4, rain: 0 });
-    expect(layerLevels('snow', 'afternoon', saved).fire).toBe(0.6); // snow's own default
+    expect(layerLevels('snow', 'afternoon', saved).fire).toBe(1); // snow's own default
     expect(layerLevels('clear', 'afternoon', saved).fire).toBe(0);
   });
 });

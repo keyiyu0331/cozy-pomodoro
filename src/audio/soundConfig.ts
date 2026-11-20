@@ -1,6 +1,7 @@
 // DATA, not logic: which sound layers exist, and which ones each weather
 // plays by default (and how loud, 0..1).
 //
+// The files are real recordings, prepared by scripts/process-audio.mjs.
 // To add a sound: put the file in public/assets/audio/, add it to
 // SOUND_LAYERS and LAYER_ORDER, then use it in WEATHER_SOUNDS.
 
@@ -14,14 +15,14 @@ export interface SoundLayerDef {
 }
 
 export const SOUND_LAYERS: Record<string, SoundLayerDef> = {
-  rain: { label: 'Rain', file: 'rain.wav' },
-  storm: { label: 'Heavy rain', file: 'storm.wav' },
-  thunder: { label: 'Thunder', file: 'thunder.wav', oneShot: true },
-  wind: { label: 'Wind', file: 'wind.wav' },
-  birds: { label: 'Birds', file: 'birds.wav' },
-  crickets: { label: 'Crickets', file: 'crickets.wav' },
-  fire: { label: 'Fireplace', file: 'fire.wav' },
-  water: { label: 'Water', file: 'water.wav' },
+  rain: { label: 'Rain', file: 'rain.m4a' },
+  storm: { label: 'Heavy rain', file: 'storm.m4a' },
+  thunder: { label: 'Thunder', file: 'thunder.m4a', oneShot: true },
+  wind: { label: 'Wind', file: 'wind.m4a' },
+  birds: { label: 'Birds', file: 'birds.m4a' },
+  crickets: { label: 'Crickets', file: 'crickets.m4a' },
+  fire: { label: 'Fireplace', file: 'fire.m4a' },
+  water: { label: 'Water', file: 'water.m4a' },
 };
 
 /** The order the layers appear in the mixer. */
@@ -37,7 +38,7 @@ export const WEATHER_SOUNDS: Record<Weather, WeatherSound> = {
   clear: { day: { birds: 0.6, wind: 0.2 }, night: { crickets: 0.5, wind: 0.15 } },
   rain: { day: { rain: 0.7 } },
   storm: { day: { storm: 0.8, thunder: 0.7 } },
-  snow: { day: { wind: 0.35, fire: 0.6 } },
+  snow: { day: { wind: 0.35, fire: 1 } }, // the fire recording is quiet, so it plays at full
   windy: { day: { wind: 0.8 } },
   fog: { day: { water: 0.5 } },
 };
