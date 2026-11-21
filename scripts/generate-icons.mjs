@@ -4,8 +4,8 @@
 //
 // It writes two kinds of icon:
 //   public/icons/icon-<size>.png  — square, for the website and phones
-//   src-tauri/app-icon.png        — rounded corners with a clear margin, the
-//                                   shape macOS expects for a desktop app
+//   src-tauri/app-icon.png        — rounded corners, a clear margin and a soft
+//                                   shadow, as macOS expects for a desktop app
 // After changing the drawing, also run `npx tauri icon src-tauri/app-icon.png`
 // to rebuild the desktop app's icon files from the second one.
 //
@@ -90,25 +90,49 @@ function chunk(type, data) {
 }
 
 /**
+ * How far a point is from the edge of a rounded square, in pixels:
+ * negative inside, 0 on the edge, positive outside.
+ * The square's top-left corner is at (left, top) and its sides are `side` long.
+ */
+function distanceToRoundedSquare(x, y, left, top, side, radius) {
+  const half = side / 2;
+  const qx = Math.abs(x + 0.5 - (left + half)) - (half - radius);
+  const qy = Math.abs(y + 0.5 - (top + half)) - (half - radius);
+  const outside = Math.hypot(Math.max(qx, 0), Math.max(qy, 0));
+  const inside = Math.min(Math.max(qx, qy), 0);
+  return outside + inside - radius;
+}
+
+// The soft shadow under a desktop icon, like other Mac apps have: black,
+// shifted down a little, fading out over a few dozen pixels.
+const SHADOW = { down: 12, reach: 30, strength: 0.42 };
+
+/**
  * Scale the drawing up and encode it as a PNG of size×size pixels.
  * `margin`: clear space around the drawing, in pixels (0 = edge to edge).
  * `radius`: how rounded the corners are, in pixels (0 = square).
+ * `shadow`: true paints a soft drop shadow in the margin (needs a margin).
  */
-function makePng(size, margin = 0, radius = 0) {
+function makePng(size, margin = 0, radius = 0, shadow = false) {
   const inner = size - margin * 2;
   const rowBytes = 1 + size * 4; // each row starts with a "no filter" byte
   const raw = Buffer.alloc(rowBytes * size); // all zero = fully see-through
-  for (let y = 0; y < inner; y++) {
-    for (let x = 0; x < inner; x++) {
-      // Skip pixels outside the rounded corners.
-      const cx = Math.max(radius - x, x - (inner - 1 - radius), 0);
-      const cy = Math.max(radius - y, y - (inner - 1 - radius), 0);
-      if (cx * cx + cy * cy > radius * radius) continue;
-      const letter = ART[Math.floor((y * GRID) / inner)][Math.floor((x * GRID) / inner)];
-      const rgb = parseInt(COLORS[letter].slice(1), 16);
-      const at = (y + margin) * rowBytes + 1 + (x + margin) * 4;
-      raw.writeUIntBE(rgb, at, 3);
-      raw[at + 3] = 255; // solid
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const at = y * rowBytes + 1 + x * 4;
+      if (distanceToRoundedSquare(x, y, margin, margin, inner, radius) <= 0) {
+        // Inside the icon's shape: a pixel of the drawing.
+        const letter = ART[Math.floor(((y - margin) * GRID) / inner)][Math.floor(((x - margin) * GRID) / inner)];
+        raw.writeUIntBE(parseInt(COLORS[letter].slice(1), 16), at, 3);
+        raw[at + 3] = 255; // solid
+      } else if (shadow) {
+        // Outside it: black, more see-through the further from the shape
+        // (measured from a copy of the shape moved down a little).
+        const d = distanceToRoundedSquare(x, y, margin, margin + SHADOW.down, inner, radius);
+        const fade = Math.min(1, Math.max(0, (d + 20) / (SHADOW.reach + 20))); // 0 near .. 1 far
+        const smooth = fade * fade * (3 - 2 * fade);
+        raw[at + 3] = Math.round(255 * SHADOW.strength * (1 - smooth));
+      }
     }
   }
   const header = Buffer.alloc(13);
@@ -130,5 +154,5 @@ for (const size of [32, 180, 192, 512]) {
 }
 // 1024 with a 96-pixel margin leaves 832 = 26 × 32, so every drawing pixel
 // becomes an exact 26×26 block.
-writeFileSync(DESKTOP_FILE, makePng(1024, 96, 186));
+writeFileSync(DESKTOP_FILE, makePng(1024, 96, 186, true));
 console.log('  src-tauri/app-icon.png');
