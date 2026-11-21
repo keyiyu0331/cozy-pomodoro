@@ -31,6 +31,20 @@
   font-size: 13px;
 }
 
+/* The label takes the room that is left; the control beside it may shrink
+   but never push out of the panel. */
+.row > span:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.row .select {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 62%;
+  text-overflow: ellipsis;
+}
+
 .row input[type='range'] {
   width: 170px;
   accent-color: var(--accent);

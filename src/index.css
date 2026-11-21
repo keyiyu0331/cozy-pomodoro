@@ -82,6 +82,14 @@ select {
   color: inherit;
 }
 
+/* Sliders: Safari's engine (used by the desktop app) draws the round knob
+   taller than the slider's own box and cuts off the overhang, so give the
+   box enough height to hold the whole knob. */
+input[type='range'] {
+  height: 28px;
+  margin: 0;
+}
+
 input,
 textarea {
   font-family: var(--font-text);
