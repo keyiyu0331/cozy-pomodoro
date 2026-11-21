@@ -57,13 +57,19 @@ The same app can be built as a real Mac app, using [Tauri](https://tauri.app).
 In the desktop app, the window jumps to the front when a focus session ends
 (changeable under Settings → Behaviour → "Bring window to front").
 
+The desktop app also shows the timer in the Mac menu bar, at the top of the
+screen: a small pie that empties as time runs out, then the phase and the time
+left, e.g. "Focus - 24:22". It keeps counting while the window is closed, and
+clicking it brings the window back. Turn it off under Settings → Behaviour →
+"Show timer in menu bar".
+
 The window opens at 1280×720, exactly four times the 320×180 scene, so the
 whole background is visible. (The scene always fills the window at a
 whole-number size; at other window shapes its edges are cropped.)
 
 Closing the window with the red "x" only hides it: the app keeps running, the
 timer and sounds carry on, and the window comes back when the session ends.
-Click the Dock icon to show it sooner. To really quit, use Cozy Pomodoro →
+Click the Dock icon or the timer in the menu bar to show it sooner. To really quit, use Cozy Pomodoro →
 Quit (Cmd+Q).
 
 One-time setup: install Rust from https://rustup.rs. Xcode's command-line

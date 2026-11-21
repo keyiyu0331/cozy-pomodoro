@@ -27,6 +27,8 @@ export interface Settings {
   reviewTime?: string; // "21:00"
   /** Desktop app only: when the window jumps to the front by itself. */
   popUpWindow: 'focusEnd' | 'everyPhase' | 'off';
+  /** Desktop app only: show the timer in the Mac menu bar. */
+  menuBarTimer: boolean;
   /** Delete sessions older than this many days (today = day 1). 0 = keep forever. */
   keepHistoryDays: number;
 }

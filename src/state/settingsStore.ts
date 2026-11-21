@@ -23,6 +23,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reducedMotion: false,
   keepHistoryDays: 0,
   popUpWindow: 'focusEnd',
+  menuBarTimer: true,
 };
 
 interface SettingsStore extends Settings {

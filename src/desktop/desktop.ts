@@ -1,14 +1,18 @@
 // Glue between the app and the desktop wrapper (Tauri). Everything here is
 // skipped on the website: `isDesktopApp` is false there.
 //
-// The desktop app adds one thing: when a phase ends, the native side (see
-// src-tauri/src/lib.rs) brings the window to the front. For that it needs to
-// know when the current phase ends, so we tell it whenever that changes.
+// The desktop app adds two things, both done by the native side (src-tauri):
+//   - when a phase ends, it brings the window to the front (lib.rs). For that
+//     it needs to know when the current phase ends;
+//   - it shows the timer in the Mac menu bar (menubar.rs). For that it needs
+//     to know the phase, the time left and whether the timer is running.
+// So we tell it about the timer whenever something changes.
 
 import { useSettingsStore } from '../state/settingsStore';
-import { useTimerStore } from '../state/timerStore';
+import { currentFullMs, useTimerStore } from '../state/timerStore';
 import { handlePhaseEnd } from '../timer/timerActions';
 import { isFinished } from '../timer/timerEngine';
+import { menuBarInfo } from './menuBar';
 import { shouldPopUp } from './popUp';
 
 /** True when running inside the desktop app rather than a browser. */
@@ -33,9 +37,26 @@ export async function initDesktop(): Promise<void> {
     if (running) void invoke('schedule_alarm', { endMs: Math.round(timer.endTimestamp!), popUp });
     else void invoke('cancel_alarm');
   }
-  useTimerStore.subscribe(syncAlarm);
-  useSettingsStore.subscribe(syncAlarm);
-  syncAlarm();
+
+  // Tell the native side what the menu bar item should show.
+  let lastMenuBar = '';
+  function syncMenuBar(): void {
+    const timer = useTimerStore.getState();
+    const show = useSettingsStore.getState().menuBarTimer;
+    const info = menuBarInfo(timer, currentFullMs(timer), Date.now(), show);
+    const message = JSON.stringify(info);
+    if (message === lastMenuBar) return; // nothing changed since last time
+    lastMenuBar = message;
+    void invoke('set_menu_bar', { info });
+  }
+
+  function sync(): void {
+    syncAlarm();
+    syncMenuBar();
+  }
+  useTimerStore.subscribe(sync);
+  useSettingsStore.subscribe(sync);
+  sync();
 
   // The native side says the phase is over: finish it right now, without
   // waiting for the page's own ticker (which macOS may slow down while the

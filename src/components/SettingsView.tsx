@@ -58,6 +58,13 @@ export function SettingsView() {
           </select>
         </label>
       )}
+      {isDesktopApp && (
+        <label className={styles.row}>
+          <span>Show timer in menu bar</span>
+          <input type="checkbox" checked={s.menuBarTimer}
+            onChange={(e) => s.update({ menuBarTimer: e.target.checked })} />
+        </label>
+      )}
       <label className={styles.row}>
         <span>End-of-day review prompt</span>
         <input type="checkbox" checked={s.reviewTime !== undefined}

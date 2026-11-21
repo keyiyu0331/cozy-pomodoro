@@ -1,8 +1,10 @@
-// The native (Rust) side of the desktop app. It does one job the web page
-// cannot do for itself: when a timer phase ends, bring the app's window to
-// the front — even if it is minimised, hidden, or behind other apps.
+// The native (Rust) side of the desktop app. It does two jobs the web page
+// cannot do for itself:
+//   - when a timer phase ends, bring the app's window to the front — even if
+//     it is minimised, hidden, or behind other apps (this file);
+//   - show the timer in the Mac menu bar (menubar.rs).
 //
-// How it works:
+// How the window pop-up works:
 //   1. When the timer starts, the page calls `schedule_alarm` with the clock
 //      time at which the phase ends.
 //   2. A background thread waits for that moment. It re-checks the real clock
@@ -15,6 +17,8 @@
 // Closing the window (the red "x") only hides it: the app keeps running, so
 // the timer carries on and the window can come back when the phase ends.
 // Clicking the Dock icon shows the window again; Quit (Cmd+Q) really quits.
+
+mod menubar;
 
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
@@ -29,7 +33,7 @@ struct Alarm {
   current: Arc<AtomicU64>,
 }
 
-fn now_ms() -> u64 {
+pub(crate) fn now_ms() -> u64 {
   SystemTime::now()
     .duration_since(UNIX_EPOCH)
     .map(|d| d.as_millis() as u64)
@@ -37,7 +41,7 @@ fn now_ms() -> u64 {
 }
 
 /// Un-minimise, show and focus the main window, in front of other apps.
-fn bring_to_front(app: &AppHandle) {
+pub(crate) fn bring_to_front(app: &AppHandle) {
   if let Some(window) = app.get_webview_window("main") {
     let _ = window.unminimize();
     let _ = window.show();
@@ -83,7 +87,12 @@ fn cancel_alarm(alarm: State<Alarm>) {
 pub fn run() {
   tauri::Builder::default()
     .manage(Alarm::default())
-    .invoke_handler(tauri::generate_handler![schedule_alarm, cancel_alarm])
+    .manage(menubar::MenuBar::default())
+    .invoke_handler(tauri::generate_handler![
+      schedule_alarm,
+      cancel_alarm,
+      menubar::set_menu_bar
+    ])
     .on_window_event(|window, event| {
       // The red "x": hide the window instead of closing it, so the app (and
       // the timer inside it) keeps running.
@@ -93,9 +102,11 @@ pub fn run() {
       }
     })
     .setup(|app| {
+      menubar::init(app.handle())?;
       // Self-test, used when checking a build. Never set in normal use.
       // Start the app with COZY_POMODORO_SELFTEST=1 in the environment and
-      // it brings its window forward 8 seconds after launch. With
+      // it prints where its menu bar item is after 3 seconds and brings its
+      // window forward 8 seconds after launch. With
       // COZY_POMODORO_SELFTEST=close it also closes its window after 3
       // seconds first, and prints whether the window is showing.
       if let Ok(mode) = std::env::var("COZY_POMODORO_SELFTEST") {
@@ -105,6 +116,10 @@ pub fn run() {
             handle.get_webview_window("main").and_then(|w| w.is_visible().ok())
           };
           std::thread::sleep(Duration::from_secs(3));
+          // Where the menu bar item is and how big: it is much wider than it
+          // is tall once the text ("Focus - 25:00") is showing.
+          let item = handle.tray_by_id("timer").and_then(|tray| tray.rect().ok().flatten());
+          eprintln!("selftest: menu bar item = {:?}", item.map(|rect| (rect.position, rect.size)));
           if mode == "close" {
             if let Some(window) = handle.get_webview_window("main") {
               let _ = window.close();
